@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тест функционального возраста</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Сестринская страница КогнитоПульса: тёмно-синий + пульсовый красный, одна колонка под телефон */
+  :root {
+    --bg: #F3F4F9; --surface: #FFFFFF; --ink: #0F172A; --muted: #5B6478; --line: #E2E5EE;
+    --navy: #121933; --navy2: #222C55; --on-navy: #FFFFFF; --pulse: #E5484D; --pulse-soft: #FDECEC;
+    --mint: #12917A; --mint-soft: #E2F5F0; --amber-soft: #FCF0DC; --amber-ink: #6B4307; --violet: #5552D0;
+    --code-bg: #FFF4E5; --code-line: #E08A3C; --code-ink: #8A4B12;
+    --dot-idle: #9AA0B2; --dot-go: #1E9E5A;
+    --display: 'Manrope', -apple-system, 'Segoe UI', Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0E1222; --surface: #171C30; --ink: #E8EAF3; --muted: #9AA2BA; --line: #2A3150;
+    --navy: #0A0E1C; --navy2: #1C2448; --on-navy: #FFFFFF; --pulse: #FF6B70; --pulse-soft: #3A1E25;
+    --mint: #3CC3A6; --mint-soft: #13332E; --amber-soft: #3A2D14; --amber-ink: #F2C98A; --violet: #8E8BFF;
+    --code-bg: #3A2A16; --code-line: #E08A3C; --code-ink: #F6C089; --dot-idle: #5D6480; --dot-go: #2FC77A; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #0E1222; --surface: #171C30; --ink: #E8EAF3; --muted: #9AA2BA; --line: #2A3150;
+    --navy: #0A0E1C; --navy2: #1C2448; --on-navy: #FFFFFF; --pulse: #FF6B70; --pulse-soft: #3A1E25;
+    --mint: #3CC3A6; --mint-soft: #13332E; --amber-soft: #3A2D14; --amber-ink: #F2C98A; --violet: #8E8BFF;
+    --code-bg: #3A2A16; --code-line: #E08A3C; --code-ink: #F6C089; --dot-idle: #5D6480; --dot-go: #2FC77A; color-scheme: dark }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--display); -webkit-font-smoothing: antialiased; }
+  .app { max-width: 560px; margin: 0 auto; padding-block: 16px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  :focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+  .hero { background: var(--navy); color: var(--on-navy); border-radius: 20px; padding: 20px; margin-bottom: 14px; }
+  .hero h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; text-wrap: balance; }
+  .hero p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.5; opacity: 0.8; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px 18px; margin-bottom: 14px; }
+  .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: var(--violet); margin-bottom: 6px; }
+  .title { font-size: 19px; font-weight: 800; margin: 0 0 8px; text-wrap: balance; }
+  .desc { font-size: 14.5px; color: var(--muted); line-height: 1.55; margin: 0 0 14px; }
+  .small { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .btn { border: none; border-radius: 12px; padding: 14px 22px; font: inherit; font-size: 15.5px; font-weight: 700; cursor: pointer; background: var(--navy2); color: var(--on-navy); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.pulse { background: var(--pulse); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  label.lab { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  input[type=text] { width: 100%; padding: 13px; border: 1.5px solid var(--line); border-radius: 11px; font: inherit; font-size: 16px; background: var(--surface); color: var(--ink); margin-bottom: 10px; }
+  .check { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.45; margin: 10px 0 14px; }
+  .check input { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+  .note { border-radius: 12px; padding: 11px 13px; font-size: 13.5px; line-height: 1.5; margin: 10px 0; }
+  .note.warn { background: var(--amber-soft); color: var(--amber-ink); }
+  .note.ok { background: var(--mint-soft); color: var(--mint); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .chip { background: var(--bg); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .fa-list { margin: 0 0 14px; padding-left: 20px; line-height: 1.6; font-size: 14.5px; }
+  .fa-count { font-size: 96px; font-weight: 800; text-align: center; margin: 20px 0; color: var(--pulse); font-variant-numeric: tabular-nums; }
+  .fa-stop { position: fixed; inset: 0; z-index: 50; border: 0; background: var(--navy); color: var(--on-navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: calc(24px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px)); font: inherit; font-size: 17px; text-align: center; cursor: pointer; }
+  .fa-big { font-size: 72px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .fa-rt { height: 300px; border-radius: 18px; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  .fa-rt-dot { width: 130px; height: 130px; border-radius: 50%; background: var(--dot-idle); }
+  .fa-rt.go .fa-rt-dot { background: var(--dot-go); }
+  .fa-rt-text { font-size: 18px; font-weight: 700; }
+  .codebox { background: var(--code-bg); border: 2px solid var(--code-line); border-radius: 14px; padding: 16px; text-align: center; margin: 14px 0; }
+  .codebox .lbl { font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--code-ink); }
+  .codebox .code { font-size: 32px; font-weight: 800; letter-spacing: 2px; margin: 6px 0; font-variant-numeric: tabular-nums; }
+  .res { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .res > div { background: var(--bg); border-radius: 14px; padding: 12px; min-width: 0; }
+  .res .v { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .res .k { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+  .foot { font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-top: 18px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div id="root" class="app"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+const CODE_RE = /^[А-ЯЁ]{1,3}-\d{1,3}$/;
+function normCode(c) {
+  const lat = { A: 'А', B: 'В', E: 'Е', K: 'К', M: 'М', H: 'Н', O: 'О', P: 'Р', C: 'С', T: 'Т', X: 'Х', Y: 'У' };
+  return String(c || '').toUpperCase().replace(/\s+/g, '').replace(/[‐-―−_]/g, '-').replace(/[ABEKMHOPCTXY]/g, ch => lat[ch]);
+}
+/* Нормы: Springer B.A. et al., J Geriatr Phys Ther 2007 — лучшая из 3 попыток, глаза закрыты */
+const BALANCE_NORMS = [[30, 15.2], [45, 12.7], [55, 8.3], [65, 4.4], [75, 3.1], [90, 1.9]];
+function balanceAge(sec) {
+  if (sec == null) return null;
+  if (sec >= BALANCE_NORMS[0][1]) return { label: '18–39 лет (молодая норма)' };
+  if (sec <= BALANCE_NORMS[BALANCE_NORMS.length - 1][1]) return { label: 'старше 80 лет' };
+  for (let i = 0; i < BALANCE_NORMS.length - 1; i++) { const [a1, s1] = BALANCE_NORMS[i], [a2, s2] = BALANCE_NORMS[i + 1];
+    if (sec <= s1 && sec >= s2) { const v = a1 + (a2 - a1) * (s1 - sec) / (s1 - s2); return { label: 'около ' + Math.round(v / 5) * 5 + ' лет' }; } }
+  return null;
+}
+/* ==================== Тест функционального возраста (общий модуль) ====================
+   1) Стойка на одной ноге с закрытыми глазами — 3 попытки, лучшая, максимум 45 с (протокол Springer et al., 2007).
+   2) Простая реакция — 10 попыток, медиана.
+   Код результата: В-13-312-7 = баланс (с) - реакция (мс) - контрольная цифра, связанная с кодом участника. */
+const FA_MAX = 45, FA_TRIALS = 3, RT_TRIALS = 10;
+function faMedian(a) { const s = a.slice().sort((x, y) => x - y); const n = s.length; return n ? (n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2) : null; }
+function faBeep(freq, dur) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    window.__faCtx = window.__faCtx || new AC(); const ctx = window.__faCtx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = freq || 880; o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.2, ctx.currentTime); o.start(); o.stop(ctx.currentTime + (dur || 0.18));
+  } catch (e) {}
+}
+function faCode(code, bal, rt) {
+  const b = Math.max(0, Math.min(FA_MAX, Math.round(bal))), r = Math.max(100, Math.min(999, Math.round(rt)));
+  const h = String(code || '').split('').reduce((s, ch) => s + ch.charCodeAt(0), 0);
+  return 'В-' + String(b).padStart(2, '0') + '-' + r + '-' + ((3 * b + 7 * r + h + 5) % 10);
+}
+function parseFaCode(code, str) {
+  const m = String(str || '').toUpperCase().replace(/\s+/g, '').replace(/[‐-―−_.·]/g, '-').replace(/^[ВBV]-?/, '').match(/^(\d{1,2})-(\d{3})-(\d)$/);
+  if (!m) return { error: 'Код теста выглядит так: В-13-312-7.' };
+  const b = Number(m[1]), r = Number(m[2]), chk = Number(m[3]);
+  const h = String(code).split('').reduce((s, ch) => s + ch.charCodeAt(0), 0);
+  if ((3 * b + 7 * r + h + 5) % 10 !== chk) return { error: 'Контрольная цифра не совпадает. Проверьте код теста и код участника.' };
+  return { fa: { balance: b, rt: r, ts: Date.now(), source: 'код В-' + m.slice(1).join('-') } };
+}
+
+function FuncAgeTest({ onDone, onCancel }) {
+  const [step, setStep] = useState('intro');
+  const [bal, setBal] = useState([]);
+  const [bs, setBs] = useState('ready'); // ready | count | run | saved
+  const [count, setCount] = useState(3);
+  const [elapsed, setElapsed] = useState(0);
+  const t0 = useRef(0), timer = useRef(null);
+  const [rts, setRts] = useState([]);
+  const [rs, setRs] = useState('ready'); // ready | wait | go | fb
+  const [fb, setFb] = useState('');
+  const goAt = useRef(0), waitT = useRef(null), lock = useRef(false);
+  useEffect(() => () => { clearInterval(timer.current); clearTimeout(waitT.current); }, []);
+
+  function startBalance() {
+    faBeep(660); setBs('count'); setCount(3);
+    let c = 3;
+    timer.current = setInterval(() => {
+      c -= 1;
+      if (c > 0) { faBeep(660); setCount(c); return; }
+      clearInterval(timer.current); faBeep(990, 0.4);
+      t0.current = performance.now(); setElapsed(0); setBs('run');
+      timer.current = setInterval(() => {
+        const e = (performance.now() - t0.current) / 1000; setElapsed(e);
+        if (e >= FA_MAX) stopBalance(FA_MAX);
+      }, 100);
+    }, 1000);
+  }
+  function stopBalance(force) {
+    clearInterval(timer.current);
+    const e = force != null ? force : (performance.now() - t0.current) / 1000;
+    if (force != null) { faBeep(990); setTimeout(() => faBeep(990), 250); }
+    setBal(prev => [...prev, Math.round(Math.min(FA_MAX, e) * 10) / 10]); setBs('saved');
+  }
+  function nextRt(list) {
+    if (list.length >= RT_TRIALS) { finish(list); return; }
+    setRs('wait'); lock.current = false;
+    waitT.current = setTimeout(() => { goAt.current = performance.now(); setRs('go'); }, 1500 + Math.random() * 2000);
+  }
+  function rtTap(e) {
+    e.preventDefault();
+    if (lock.current) return;
+    if (rs === 'wait') { clearTimeout(waitT.current); lock.current = true; setFb('Слишком рано — ждите зелёный'); setRs('fb'); setTimeout(() => nextRt(rts), 900); return; }
+    if (rs === 'go') {
+      lock.current = true;
+      const ms = performance.now() - goAt.current;
+      if (ms < 100) { setFb('Слишком рано — ждите зелёный'); setRs('fb'); setTimeout(() => nextRt(rts), 900); return; }
+      const list = [...rts, Math.round(ms)]; setRts(list); setFb(Math.round(ms) + ' мс'); setRs('fb');
+      setTimeout(() => nextRt(list), 700);
+    }
+  }
+  function finish(list) {
+    onDone({ balance: Math.max(...bal), balanceTrials: bal, rt: Math.round(faMedian(list)), rtTrials: list, ts: Date.now() });
+  }
+
+  if (step === 'intro') return (
+    <div className="card">
+      <div className="eyebrow">Тест функционального возраста · около 4 минут</div>
+      <div className="title">Равновесие и скорость реакции</div>
+      <p className="desc">Два коротких теста. Понадобится свободное место рядом со стеной или стулом, чтобы было за что схватиться. Включите звук на устройстве.</p>
+      <ol className="fa-list">
+        <li><b>Стойка на одной ноге с закрытыми глазами</b> — 3 попытки, засчитывается лучшая. Максимум 45 секунд.</li>
+        <li><b>Простая реакция</b> — 10 раз нажать на экран, как только круг станет зелёным.</li>
+      </ol>
+      <div className="note warn">Если у вас кружится голова, есть травма ноги или проблемы с равновесием — пропустите первый тест и сообщите исследователю.</div>
+      <div className="row"><button className="btn" onClick={() => setStep('bal')}>Начать</button>{onCancel && <button className="btn ghost" onClick={onCancel}>Отмена</button>}</div>
+    </div>
+  );
+
+  if (step === 'bal') {
+    if (bs === 'run') return (
+      <button className="fa-stop" onPointerDown={(e) => { e.preventDefault(); stopBalance(); }}>
+        <span className="fa-big">{elapsed.toFixed(1)} с</span>
+        <span>Глаза закрыты. Потеряли равновесие или открыли глаза — нажмите в любое место экрана</span>
+      </button>
+    );
+    return (
+      <div className="card">
+        <div className="eyebrow">Тест 1 из 2 · попытка {Math.min(FA_TRIALS, bal.length + (bs === 'saved' ? 0 : 1))} из {FA_TRIALS}</div>
+        <div className="title">Стойка на одной ноге с закрытыми глазами</div>
+        {bs === 'count' ? <div className="fa-count">{count}</div> : <>
+          <p className="desc">Встаньте ровно, руки скрестите на груди. Нажмите «Старт». После трёх коротких сигналов и одного длинного поднимите одну ногу — стопа рядом с лодыжкой опорной ноги, не касаясь её, — и закройте глаза. Время остановится, когда вы нажмёте на экран. Лучше, если на экран нажимает другой человек, который за вами наблюдает.</p>
+          <p className="small">Попытка заканчивается, если вы открыли глаза, коснулись ногой пола или опорной ноги, разомкнули руки или сдвинули опорную стопу.</p>
+        </>}
+        {bal.length > 0 && <div className="chips">{bal.map((v, i) => <span key={i} className="chip">Попытка {i + 1}: <b>{v.toFixed(1)} с</b></span>)}</div>}
+        {bs !== 'count' && (bal.length < FA_TRIALS
+          ? <div className="row"><button className="btn pulse" onClick={startBalance}>{bal.length ? 'Следующая попытка' : 'Старт'}</button></div>
+          : <div className="row"><button className="btn" onClick={() => { setStep('rt'); setRs('ready'); }}>Дальше — тест реакции</button></div>)}
+      </div>
+    );
+  }
+
+  return (
+    <div className="card">
+      <div className="eyebrow">Тест 2 из 2 · попытка {Math.min(RT_TRIALS, rts.length + 1)} из {RT_TRIALS}</div>
+      <div className="title">Простая реакция</div>
+      {rs === 'ready' ? <>
+        <p className="desc">Сядьте удобно. Положите палец рядом с экраном. Как только серый круг станет зелёным — сразу нажмите на него. Не нажимайте заранее.</p>
+        <div className="row"><button className="btn" onClick={() => nextRt(rts)}>Начать</button></div>
+      </> : (
+        <div className={'fa-rt ' + (rs === 'go' ? 'go' : '')} onPointerDown={rtTap}>
+          <div className="fa-rt-dot"></div>
+          <div className="fa-rt-text">{rs === 'go' ? 'Жми!' : rs === 'fb' ? fb : 'Ждите зелёный…'}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [code, setCode] = useState('');
+  const [consent, setConsent] = useState(false);
+  const [stage, setStage] = useState('start');
+  const [res, setRes] = useState(null);
+  return (
+    <div>
+      <div className="hero">
+        <h1>Тест функционального возраста</h1>
+        <p>Исследование «КогнитоПульс». Равновесие и скорость реакции — около 4 минут. Результаты никуда не отправляются и остаются на этом телефоне.</p>
+      </div>
+      {stage === 'start' && (
+        <div className="card">
+          <label className="lab" htmlFor="code">Код участника — его выдал исследователь</label>
+          <input id="code" type="text" placeholder="Например: Э-07" value={code} maxLength={20} onChange={e => setCode(normCode(e.target.value))} />
+          {code && !CODE_RE.test(code) && <div className="note warn">Код выглядит так: буквы, тире и цифры — например Э-07.</div>}
+          <label className="check"><input id="consent" type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} /><span>Я участник исследования «КогнитоПульс» и подписал(а) согласие у исследователя. Результат я сам(а) покажу на замере.</span></label>
+          <div className="note warn">Проходите тест не позже чем за 30 минут до замера пульса или после него — стояние на одной ноге влияет на пульс.</div>
+          <button className="btn" disabled={!CODE_RE.test(code) || !consent} onClick={() => setStage('test')}>Перейти к тесту</button>
+        </div>
+      )}
+      {stage === 'test' && <FuncAgeTest onCancel={() => setStage('start')} onDone={(r) => { setRes(r); setStage('result'); }} />}
+      {stage === 'result' && res && (() => { const ba = balanceAge(res.balance); return (
+        <div className="card">
+          <div className="eyebrow">Готово · участник {code}</div>
+          <div className="res">
+            <div><div className="v">{res.balance.toFixed(1)} с</div><div className="k">Равновесие с закрытыми глазами, лучшая попытка из трёх</div></div>
+            <div><div className="v">{res.rt} мс</div><div className="k">Простая реакция, медиана 10 попыток</div></div>
+          </div>
+          <div className="codebox">
+            <div className="lbl">Код результата для замера</div>
+            <div className="code">{faCode(code, res.balance, res.rt)}</div>
+            <div className="small" style={{ color: 'var(--ink)' }}>Участник <b>{code}</b>. <b>Сделайте скриншот этого экрана</b> и покажите его на замере КогнитоПульса.</div>
+          </div>
+          <p className="small">Сравнение с возрастными нормами вы увидите в отчёте КогнитоПульса — там учитывается ваш возраст. Скорость реакции на разных телефонах отличается из-за задержки экрана, поэтому её сравнивают только между вашими замерами.</p>
+        </div>
+      ); })()}
+      <div className="foot">Пилотная версия проекта «КогнитоПульс», Поволжский ГУФКСиТ, 2026. Не является медицинской диагностикой.</div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>

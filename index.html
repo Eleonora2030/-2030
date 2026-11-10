@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>КогнитоПульс — тесты для участников</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#F3F4F9; --surface:#FFFFFF; --ink:#0F172A; --muted:#5B6478; --line:#E2E5EE; --navy:#121933; --pulse:#E5484D; --teal:#0F6B5C; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0E1222; --surface:#171C30; --ink:#E8EAF3; --muted:#9AA2BA; --line:#2A3150; --navy:#0A0E1C; --pulse:#FF6B70; --teal:#3CC3A6; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Manrope',-apple-system,'Segoe UI',Arial,sans-serif; }
+  .app { max-width:560px; margin:0 auto; padding:16px max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); }
+  .hero { background:var(--navy); color:#fff; border-radius:20px; padding:22px; margin-bottom:14px; }
+  h1 { margin:0; font-size:24px; font-weight:800; }
+  .hero p { margin:8px 0 0; font-size:14px; line-height:1.5; opacity:.8; }
+  a.tile { display:block; text-decoration:none; color:inherit; background:var(--surface); border:1.5px solid var(--line); border-radius:18px; padding:18px; margin-bottom:12px; }
+  a.tile:focus-visible { outline:3px solid var(--pulse); outline-offset:2px; }
+  .k { font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; }
+  .t { font-size:19px; font-weight:800; margin:6px 0 4px; }
+  .d { font-size:14px; color:var(--muted); line-height:1.5; }
+  .step1 .k { color:var(--teal); } .step2 .k { color:var(--pulse); }
+  .note { font-size:13px; color:var(--muted); line-height:1.55; margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hero"><h1>КогнитоПульс</h1><p>Тесты для участников исследования. Понадобится код участника — его выдал исследователь, например Э-07.</p></div>
+  <a class="tile step1" href="kognitivnogid.html"><div class="k">Тест 1 · около 10 минут</div><div class="t">КогнитивноГид</div><div class="d">Три теста о том, как вы работаете с информацией.</div></a>
+  <a class="tile step2" href="vozrast.html"><div class="k">Тест 2 · около 4 минут</div><div class="t">Тест функционального возраста</div><div class="d">Равновесие и скорость реакции. Понадобится место, чтобы постоять на одной ноге.</div></a>
+  <p class="note">В конце каждого теста появится код результата — сделайте скриншот и покажите его на замере. Результаты никуда не отправляются и остаются на вашем телефоне.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,2892 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>КогнитивноГид</title>
+<style>
+  :root {
+    --teal-dark: #0A4A40;
+    --teal: #0F6B5C;
+    --teal-light: #12806D;
+    --coral: #E1673F;
+    --coral-light: #F08962;
+    --sand: #F5F2EC;
+    --ink: #1B2430;
+    --grey: #5B6470;
+    --paper: #FFFFFF;
+    --green-ok: #1E8E5A;
+    --red-no: #C2483A;
+    --amber: #B4790E;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(180deg, #FAFAF7 0%, #F2F1EC 100%);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { max-width: 800px; margin: 0 auto; padding: 20px 18px 70px; }
+  :focus-visible { outline: 3px solid var(--coral); outline-offset: 2px; }
+
+  .hero {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 55%, var(--teal-light) 100%);
+    border-radius: 22px; padding: 30px 26px; position: relative; overflow: hidden;
+    color: var(--paper); margin-bottom: 22px; box-shadow: 0 14px 34px -12px rgba(10,74,64,0.45);
+  }
+  .hero::before { content:''; position:absolute; top:-60px; right:-40px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.08); }
+  .hero::after { content:''; position:absolute; bottom:-70px; right:60px; width:140px; height:140px; border-radius:50%; background:rgba(225,103,63,0.18); }
+  .hero-inner { position: relative; z-index: 1; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+  .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .logo-badge { width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; }
+  h1 { font-size: 25px; margin: 0; font-weight: 800; letter-spacing: -0.3px; }
+  .subtitle { font-size: 14px; color: rgba(255,255,255,0.82); margin-top: 8px; max-width: 480px; line-height: 1.5; }
+  .mentor-btn {
+    background: rgba(255,255,255,0.14); color: var(--paper); border: 1px solid rgba(255,255,255,0.35);
+    padding: 8px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .progress-track { display: flex; align-items: center; gap: 6px; margin-top: 20px; }
+  .progress-step { flex: 1; height: 5px; border-radius: 4px; background: rgba(255,255,255,0.22); overflow: hidden; }
+  .progress-step.done, .progress-step.active { background: var(--coral); }
+
+  .card { background: var(--paper); border-radius: 18px; padding: 26px 24px; margin-bottom: 18px; box-shadow: 0 6px 20px -10px rgba(27,36,48,0.15); border: 1px solid #ECE9E1; animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+  .card-title { font-size: 19px; font-weight: 800; margin: 0 0 6px; color: var(--ink); }
+  .card-desc { font-size: 14px; color: var(--grey); margin-bottom: 20px; line-height: 1.5; }
+
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .choice-grid { grid-template-columns: 1fr; } }
+  .choice-card {
+    text-align: left; cursor: pointer; border-radius: 14px; padding: 18px; border: 2px solid #E7E3D9;
+    background: var(--sand); transition: 0.15s; position: relative; font-family: inherit; display: block; width: 100%;
+  }
+  .choice-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+  .choice-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--teal); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .choice-card b { display: block; color: var(--teal-dark); font-size: 15.5px; margin-bottom: 5px; }
+  .choice-card span { color: var(--grey); font-size: 13px; line-height: 1.4; display: block; }
+  .badge-time { position: absolute; top: 14px; right: 14px; font-size: 11px; font-weight: 700; color: var(--teal-dark); background: rgba(15,107,92,0.1); padding: 3px 9px; border-radius: 20px; }
+
+  .q-block { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid #F0EDE5; }
+  .q-block:last-of-type { border-bottom: none; }
+  .q-pair { font-size: 13.5px; color: var(--grey); margin-bottom: 10px; line-height: 1.45; }
+  .q-pair .lab { font-weight: 700; color: var(--teal-dark); }
+  .scale { display: flex; gap: 6px; }
+  .scale button { flex: 1; padding: 11px 4px; border-radius: 10px; border: 1.5px solid #E7E3D9; background: var(--paper); cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--grey); transition: 0.12s; font-family: inherit; }
+  .scale button:hover { border-color: var(--teal); }
+  .scale button.selected { background: var(--teal); border-color: var(--teal); color: var(--paper); }
+  .scale-labels { display: flex; justify-content: space-between; font-size: 11px; color: #A8A199; margin-top: 4px; }
+
+  .fig-wrap { display: flex; flex-direction: column; align-items: center; }
+  .fig-progress { display: flex; gap: 5px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; max-width: 280px; }
+  .fig-dot { width: 7px; height: 7px; border-radius: 50%; background: #E7E3D9; }
+  .fig-dot.done { background: var(--teal); }
+  .fig-dot.active { background: var(--coral); }
+  .fig-instruction { font-size: 14px; color: var(--ink); text-align: center; margin-bottom: 14px; max-width: 420px; }
+  .fig-instruction b { color: var(--teal-dark); }
+  .fig-stage { width: 100%; max-width: 300px; aspect-ratio: 1; border-radius: 16px; background: var(--sand); border: 1.5px solid #E7E3D9; position: relative; cursor: crosshair; }
+  .fig-feedback { margin-top: 14px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; min-height: 20px; }
+  .fig-feedback.correct { color: var(--green-ok); }
+  .fig-feedback.wrong { color: var(--red-no); }
+  .fig-feedback.tooFast { color: var(--amber); }
+  .fig-hint { font-size: 12px; color: var(--grey); margin-top: 10px; text-align: center; }
+  .fig-alt-link { background: none; border: none; color: var(--teal); font-size: 12.5px; text-decoration: underline; cursor: pointer; margin-top: 14px; font-family: inherit; }
+
+  .match-standard { background: var(--sand); border-radius: 14px; padding: 10px; margin-bottom: 16px; }
+  .match-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; }
+  .match-option { background: var(--paper); border: 2px solid #E7E3D9; border-radius: 12px; padding: 6px; cursor: pointer; transition: 0.12s; }
+  .match-option:hover { border-color: var(--teal); transform: translateY(-1px); }
+
+  .stroop-word { font-size: 40px; font-weight: 800; text-align: center; margin: 20px 0; letter-spacing: 1px; font-family: Arial, sans-serif; }
+  .stroop-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 280px; margin: 0 auto; }
+  .stroop-btn { width: 100%; height: 56px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.15); cursor: pointer; transition: 0.1s; }
+  .stroop-btn:hover { transform: scale(1.04); }
+
+  .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+  .profile-chip { background: var(--sand); border-radius: 12px; padding: 12px 8px; text-align: center; }
+  .profile-chip b { display: block; font-size: 13px; color: var(--teal-dark); line-height: 1.3; min-height: 34px; }
+  .profile-chip span { display: block; font-size: 10px; color: var(--grey); line-height: 1.3; margin-top: 4px; }
+  .profile-chip .profile-pct { font-size: 14px; font-weight: 800; color: var(--coral); margin-top: 6px; }
+  @media (max-width: 480px) { .profile-grid { grid-template-columns: 1fr; } }
+
+  select, input[type=text] { width: 100%; padding: 13px 14px; border-radius: 10px; border: 1.5px solid #E7E3D9; font-size: 14.5px; margin-bottom: 16px; font-family: inherit; background: var(--paper); color: var(--ink); }
+  select:focus, input[type=text]:focus { outline: none; border-color: var(--teal); }
+  label.field-label { font-size: 13px; font-weight: 700; color: var(--teal-dark); display: block; margin-bottom: 6px; }
+
+  button.primary { background: var(--coral); color: var(--paper); border: none; padding: 14px 26px; border-radius: 11px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px -8px rgba(225,103,63,0.55); transition: 0.12s; font-family: inherit; }
+  button.primary:hover { transform: translateY(-1px); }
+  button.primary:disabled { background: #E9D9D0; box-shadow: none; cursor: not-allowed; transform: none; }
+  button.ghost { background: transparent; color: var(--teal-dark); border: 1.5px solid var(--teal); padding: 11px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+  .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .style-badge { background: var(--teal-dark); color: var(--paper); font-weight: 700; padding: 8px 16px; border-radius: 24px; font-size: 14px; }
+  .meta-chip { font-size: 12.5px; color: var(--grey); background: var(--sand); padding: 5px 11px; border-radius: 16px; }
+  .confidence-note { font-size: 12.5px; color: var(--amber); background: #FBF1E1; padding: 8px 12px; border-radius: 10px; margin-bottom: 16px; }
+
+  .explain-box { background: var(--sand); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--ink); line-height: 1.55; margin-bottom: 18px; }
+  .explain-box b { color: var(--teal-dark); }
+
+  .mismatch-box { background: #FBF1E1; border: 1px solid #EAD3A8; border-radius: 12px; padding: 14px 16px; font-size: 13.5px; color: var(--ink); line-height: 1.55; margin-bottom: 18px; }
+  .mismatch-box b { color: var(--amber); }
+
+  .tip-group-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--teal); margin: 18px 0 8px; }
+  .tip-list { list-style: none; padding: 0; margin: 0; }
+  .tip-list li { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0EDE5; font-size: 14.5px; line-height: 1.5; }
+  .tip-list li:last-child { border-bottom: none; }
+  .tip-num { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--teal); color: var(--paper); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 1px; }
+
+  .pe-card { background: var(--sand); border-radius: 14px; padding: 6px 18px; }
+  .pe-aspect { padding: 14px 0; border-bottom: 1px solid #E7E3D9; }
+  .pe-aspect:last-child { border-bottom: none; }
+  .pe-aspect-label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--teal-dark); margin-bottom: 5px; }
+  .pe-aspect-text { font-size: 14px; color: var(--ink); line-height: 1.55; }
+
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F0EDE5; font-size: 14px; }
+  .stat-row:last-child { border-bottom: none; }
+  .pd-details { margin: 4px 0 10px; font-size: 13px; }
+  .pd-details summary { cursor: pointer; color: var(--ink); font-weight: 600; padding: 6px 0; }
+  .pd-text { background: #F7F5EF; border-radius: 10px; padding: 10px 14px; line-height: 1.5; color: #444; max-height: 260px; overflow-y: auto; }
+  .pd-text p { margin: 0 0 8px; }
+  .pd-check { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.45; margin: 6px 0 14px; cursor: pointer; }
+  .pd-check input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; }
+  .ws-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 6px; }
+  .ws-tab { border: 1px solid #E3DED2; background: #fff; border-radius: 999px; padding: 8px 14px; font-size: 13.5px; cursor: pointer; color: var(--ink); font-family: inherit; }
+  .ws-tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .ws-dist { margin-bottom: 10px; }
+  .ws-dist-title { font-size: 12.5px; color: #6B6B6B; margin: 8px 0 2px; }
+  .ws-names { font-size: 12.5px; color: #6B6B6B; text-align: right; max-width: 60%; }
+  .ws-sub { font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
+  .stat-bar-track { flex: 1; height: 8px; background: var(--sand); border-radius: 6px; margin: 0 12px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; background: var(--teal); }
+  .big-num { font-size: 34px; font-weight: 800; color: var(--teal-dark); }
+
+  .footer-note { font-size: 12px; color: var(--grey); margin-top: 24px; padding-top: 16px; border-top: 1px solid #E7E3D9; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="root" class="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+
+/* ==================== Хранилище: window.storage внутри Claude, ====================
+   в памяти сессии — при отдельном хостинге (там window.storage недоступен).
+   localStorage сознательно не используется — это временная замена, а не постоянная. */
+/* ==================== Настоящий сервер: Yandex Cloud Function + Яндекс.Диск ====================
+   Разверните backend_yandex_disk.py.txt как Yandex Cloud Function (см. подробную инструкцию
+   в комментарии в начале самого файла) и вставьте сюда полученную ссылку вида
+   https://functions.yandexcloud.net/ВАШ_ID_ФУНКЦИИ
+   Пока строка пустая — работает резервная схема (window.storage внутри Claude, иначе —
+   только в рамках сессии этого браузера). */
+const SERVER_URL = ""; // НЕ заполнять: в исследовании «КогнитоПульс» данные никуда не отправляются
+/* Режим исследования: студент видит свой профиль и код результата, но не советы —
+   советы по стилю получает только группа «Персональный план» в отчёте КогнитоПульса. */
+const RESEARCH_MODE = true;
+/* Код результата: три балла (0–99) и контрольная цифра, связанная с кодом участника.
+   Пример: 64-38-21-7. КогнитоПульс проверяет контрольную цифру при вводе. */
+function resultCode(code, p1, p2, p3) {
+  const c = v => Math.max(0, Math.min(99, Math.round(v)));
+  const a = c(p1), b = c(p2), d = c(p3);
+  const h = String(code || '').split('').reduce((s, ch) => s + ch.charCodeAt(0), 0);
+  const chk = (a + 3 * b + 7 * d + h) % 10;
+  return [a, b, d].map(x => String(x).padStart(2, '0')).join('-') + '-' + chk;
+}
+/* Если КогнитивноГид открыт по ссылке Google-скрипта (как для студентов), он сохраняет результаты
+   в Google Таблицу сам, через google.script.run — ссылку вписывать не нужно. */
+const HAS_GAS = false; // отправка в Google отключена: данные остаются на устройстве участника
+const SERVER_ON = !!SERVER_URL || HAS_GAS;
+/* Код участника выдаёт исследователь, например Э-07. Латинские буквы-двойники заменяются на русские. */
+const CODE_RE = /^[А-ЯЁ]{1,3}-\d{1,3}$/;
+function normCode(c) {
+  const lat = { A: 'А', B: 'В', E: 'Е', K: 'К', M: 'М', H: 'Н', O: 'О', P: 'Р', C: 'С', T: 'Т', X: 'Х', Y: 'У' };
+  return String(c || '').toUpperCase().replace(/\s+/g, '').replace(/[‐-―−_]/g, '-').replace(/[ABEKMHOPCTXY]/g, ch => lat[ch]);
+}
+
+let lastServerError = null;
+
+/* ==== Согласие на обработку персональных данных (152-ФЗ) ==== 
+   Впишите сюда e-mail, по которому можно отозвать согласие: */
+const PD_OPERATOR = "Свих Элеонора Эдуардовна, автор проекта «КогнитивноГид» (Поволжский ГУФКСиТ, г. Казань)";
+const PD_CONTACT = "Eins.svikh@mail.ru";
+/* false — вместо ФИО спрашиваем номер в списке группы (рекомендуется при хранении в Google Таблице:
+   ФИО граждан РФ по 152-ФЗ должны собираться в базы данных на территории России).
+   true — спрашивать ФИО (только если сервер находится в России). */
+const COLLECT_FIO = false;
+const ID_LABEL = COLLECT_FIO ? 'ФИО' : 'Код участника';
+
+// Google Apps Script отвечает через JSONP (обходит ограничения CORS); другие серверы — обычный fetch.
+const IS_GOOGLE = /script\.google(usercontent)?\.com/.test(SERVER_URL);
+function jsonpCall(params) {
+  return new Promise((resolve, reject) => {
+    const cb = 'kgCb_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    const qs = Object.entries({ ...params, callback: cb })
+      .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(typeof v === 'string' ? v : JSON.stringify(v))).join('&');
+    const tag = document.createElement('script');
+    const timer = setTimeout(() => { cleanup(); reject(new Error('сервер не ответил за 25 секунд')); }, 25000);
+    function cleanup() { clearTimeout(timer); delete window[cb]; tag.remove(); }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    tag.onerror = () => { cleanup(); reject(new Error('не удалось загрузить ответ сервера')); };
+    tag.src = SERVER_URL + (SERVER_URL.includes('?') ? '&' : '?') + qs;
+    document.body.appendChild(tag);
+  });
+}
+async function serverCall(payload) {
+  if (HAS_GAS) return new Promise((resolve, reject) => window.google.script.run.withSuccessHandler(resolve).withFailureHandler(e => reject(new Error(e && e.message ? e.message : e))).api(payload));
+  if (IS_GOOGLE) return jsonpCall(payload);
+  const res = await fetch(SERVER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, // простой запрос без предварительного OPTIONS
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}
+
+async function serverLog(record) {
+  if (!SERVER_ON) return false;
+  try {
+    const data = await serverCall({ action: 'log', record });
+    if (!data.ok) { lastServerError = data.error || 'неизвестная ошибка сервера'; return false; }
+    lastServerError = null;
+    return true;
+  } catch (e) {
+    lastServerError = 'Не удалось связаться с сервером: ' + (e && e.message ? e.message : e);
+    return false;
+  }
+}
+
+let mentorKey = null; // пароль преподавателя хранится только до закрытия вкладки
+async function serverList() {
+  if (!SERVER_ON) return null;
+  if (!mentorKey) {
+    mentorKey = (typeof window !== 'undefined' && window.prompt) ? window.prompt('Пароль преподавателя (ADMIN_KEY):') : null;
+    if (!mentorKey) { lastServerError = 'Для просмотра результатов нужен пароль преподавателя'; return null; }
+  }
+  try {
+    const data = await serverCall({ action: 'list', key: mentorKey });
+    if (!data.ok) { mentorKey = null; lastServerError = data.error || 'неизвестная ошибка сервера'; return null; }
+    lastServerError = null;
+    return data.records || [];
+  } catch (e) {
+    lastServerError = 'Не удалось связаться с сервером: ' + (e && e.message ? e.message : e);
+    return null;
+  }
+}
+
+const hasPlatformStorage = () => typeof window !== 'undefined' && !!window.storage;
+const memoryFallback = {};
+let lastStorageError = null;
+async function storageGet(key, shared) {
+  if (hasPlatformStorage()) {
+    try { const r = await window.storage.get(key, shared); lastStorageError = null; return r ? r.value : null; }
+    catch (e) { lastStorageError = `get(${key}): ${e && e.message ? e.message : e}`; return null; }
+  }
+  const k = (shared ? 'shared:' : 'personal:') + key;
+  return memoryFallback[k] !== undefined ? memoryFallback[k] : null;
+}
+async function storageSet(key, value, shared) {
+  if (hasPlatformStorage()) {
+    try { await window.storage.set(key, value, shared); lastStorageError = null; return true; }
+    catch (e) { lastStorageError = `set(${key}): ${e && e.message ? e.message : e}`; return false; }
+  }
+  const k = (shared ? 'shared:' : 'personal:') + key;
+  memoryFallback[k] = value;
+  return true;
+}
+
+/* Простой чек-лист удалён по решению автора проекта — единственный инструмент для
+   полезависимости/поленезависимости теперь тест включённых фигур (ниже), расширенный до 20 уровней. */
+
+/* ==================== Тест включённых фигур — 10 уровней (было 6), с защитой от угадывания ====================
+   Защита: 1) минимальное время просмотра перед засчитыванием клика, 2) кликабельные фигуры-обманки,
+   3) фигура теперь ВИДНА (закамуфлирована линиями, как в настоящем тесте Уиткина), а не полностью невидима. */
+const MIN_REVEAL_MS = 900;
+const DIST_COLOR = "#B9B0A0";
+
+function inflate(pointsStr, factor) {
+  const pts = pointsStr.split(' ').map(p => p.split(',').map(Number));
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return pts.map(([x, y]) => `${cx + (x - cx) * factor},${cy + (y - cy) * factor}`).join(' ');
+}
+function shiftPoints(pointsStr, dx, dy) {
+  return pointsStr.split(' ').map(p => {
+    const [x, y] = p.split(',').map(Number);
+    return `${(x + dx).toFixed(1)},${(y + dy).toFixed(1)}`;
+  }).join(' ');
+}
+function centroidOf(pointsStr) {
+  const pts = pointsStr.split(' ').map(p => p.split(',').map(Number));
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return [cx, cy];
+}
+function rotatePoints(pointsStr, deg, cx, cy) {
+  const rad = (deg * Math.PI) / 180;
+  return pointsStr.split(' ').map(p => {
+    const [x, y] = p.split(',').map(Number);
+    const dx = x - cx, dy = y - cy;
+    const nx = cx + dx * Math.cos(rad) - dy * Math.sin(rad);
+    const ny = cy + dx * Math.sin(rad) + dy * Math.cos(rad);
+    return `${nx.toFixed(1)},${ny.toFixed(1)}`;
+  }).join(' ');
+}
+function buildTrapTriangle(target, dx, dy, rot) {
+  const shifted = shiftPoints(target, dx, dy);
+  const [cx, cy] = centroidOf(shifted);
+  return rotatePoints(shifted, rot || 0, cx, cy);
+}
+
+const FIGURE_LEVELS = [
+  { target: "50,15 82,82 18,82", trapOffsets: [{ dx: -30, dy: -3, rot: 0 }], decoys: [{ type: 'circle', cx: 78, cy: 20, r: 9 }] },
+  { target: "34,22 60,78 12,70", trapOffsets: [{ dx: 24, dy: -14, rot: 15 }], decoys: [{ type: 'circle', cx: 75, cy: 30, r: 12 }, { type: 'line', x1: 6, y1: 18, x2: 94, y2: 60 }] },
+  { target: "66,24 86,68 44,64", trapOffsets: [{ dx: -22, dy: 10, rot: -12 }, { dx: 16, dy: -20, rot: 20 }], decoys: [{ type: 'rect', x: 8, y: 10, w: 18, h: 18, rot: 10 }, { type: 'line', x1: 4, y1: 40, x2: 96, y2: 20 }, { type: 'line', x1: 10, y1: 85, x2: 80, y2: 10 }] },
+  { target: "40,30 66,74 20,70", trapOffsets: [{ dx: -18, dy: -22, rot: 25 }, { dx: 20, dy: 14, rot: -18 }], decoys: [{ type: 'circle', cx: 20, cy: 25, r: 13 }, { type: 'rect', x: 55, y: 15, w: 26, h: 26, rot: 18 }, { type: 'line', x1: 4, y1: 15, x2: 96, y2: 45 }] },
+  { target: "58,18 78,60 34,66", trapOffsets: [{ dx: -20, dy: 8, rot: -20 }, { dx: 12, dy: -18, rot: 30 }], decoys: [{ type: 'circle', cx: 30, cy: 75, r: 15 }, { type: 'rect', x: 10, y: 60, w: 20, h: 20, rot: -15 }, { type: 'line', x1: 2, y1: 55, x2: 98, y2: 30 }, { type: 'line', x1: 15, y1: 5, x2: 15, y2: 95 }] },
+  { target: "46,40 58,66 34,62", trapOffsets: [{ dx: -16, dy: -14, rot: 35 }, { dx: 20, dy: 8, rot: -25 }, { dx: -8, dy: 20, rot: 15 }], decoys: [{ type: 'circle', cx: 70, cy: 30, r: 17 }, { type: 'rect', x: 55, y: 60, w: 24, h: 24, rot: 25 }, { type: 'line', x1: 0, y1: 20, x2: 100, y2: 20 }, { type: 'line', x1: 20, y1: 0, x2: 20, y2: 100 }, { type: 'line', x1: 10, y1: 10, x2: 90, y2: 90 }] },
+  { target: "24,55 48,20 20,15", trapOffsets: [{ dx: 18, dy: -10, rot: -30 }, { dx: -16, dy: 16, rot: 40 }, { dx: 10, dy: 18, rot: -15 }], decoys: [{ type: 'circle', cx: 68, cy: 65, r: 16 }, { type: 'rect', x: 55, y: 12, w: 22, h: 22, rot: 30 }, { type: 'line', x1: 0, y1: 70, x2: 100, y2: 40 }, { type: 'line', x1: 30, y1: 0, x2: 60, y2: 100 }] },
+  { target: "70,55 88,85 55,80", trapOffsets: [{ dx: -22, dy: 4, rot: 45 }, { dx: 14, dy: -18, rot: -35 }, { dx: 6, dy: 20, rot: 20 }], decoys: [{ type: 'circle', cx: 25, cy: 30, r: 14 }, { type: 'rect', x: 8, y: 55, w: 24, h: 24, rot: -20 }, { type: 'line', x1: 0, y1: 10, x2: 100, y2: 90 }, { type: 'line', x1: 40, y1: 0, x2: 10, y2: 100 }, { type: 'line', x1: 60, y1: 5, x2: 95, y2: 45 }] },
+  { target: "38,45 55,75 25,72", trapOffsets: [{ dx: -12, dy: -20, rot: -40 }, { dx: 20, dy: 10, rot: 35 }, { dx: -6, dy: 18, rot: -20 }], decoys: [{ type: 'circle', cx: 75, cy: 20, r: 12 }, { type: 'circle', cx: 15, cy: 20, r: 10 }, { type: 'rect', x: 60, y: 55, w: 26, h: 26, rot: 15 }, { type: 'line', x1: 0, y1: 30, x2: 100, y2: 55 }, { type: 'line', x1: 20, y1: 0, x2: 80, y2: 100 }] },
+  { target: "60,30 72,58 46,55", trapOffsets: [{ dx: 16, dy: 16, rot: 50 }, { dx: -20, dy: -8, rot: -45 }, { dx: 8, dy: -20, rot: 25 }], decoys: [{ type: 'circle', cx: 20, cy: 65, r: 15 }, { type: 'rect', x: 65, y: 65, w: 22, h: 22, rot: -10 }, { type: 'line', x1: 0, y1: 15, x2: 100, y2: 15 }, { type: 'line', x1: 0, y1: 85, x2: 100, y2: 85 }, { type: 'line', x1: 30, y1: 0, x2: 30, y2: 100 }, { type: 'line', x1: 5, y1: 5, x2: 95, y2: 95 }] },
+  { target: "30,60 52,28 18,22", trapOffsets: [{ dx: 20, dy: 12, rot: -20 }, { dx: -15, dy: -18, rot: 30 }, { dx: 22, dy: -14, rot: 15 }], decoys: [{ type: 'circle', cx: 78, cy: 25, r: 13 }, { type: 'rect', x: 62, y: 55, w: 24, h: 24, rot: 20 }, { type: 'line', x1: 0, y1: 45, x2: 100, y2: 65 }] },
+  { target: "75,40 90,78 58,72", trapOffsets: [{ dx: -18, dy: -20, rot: 25 }, { dx: 14, dy: 16, rot: -35 }, { dx: -22, dy: 6, rot: 40 }], decoys: [{ type: 'circle', cx: 22, cy: 30, r: 14 }, { type: 'rect', x: 8, y: 60, w: 20, h: 20, rot: -15 }, { type: 'line', x1: 0, y1: 20, x2: 100, y2: 5 }, { type: 'line', x1: 30, y1: 95, x2: 60, y2: 5 }] },
+  { target: "20,35 42,68 8,62", trapOffsets: [{ dx: 22, dy: -10, rot: -25 }, { dx: -12, dy: 18, rot: 35 }, { dx: 18, dy: 16, rot: -18 }], decoys: [{ type: 'circle', cx: 70, cy: 20, r: 15 }, { type: 'rect', x: 60, y: 55, w: 26, h: 26, rot: 12 }, { type: 'line', x1: 0, y1: 90, x2: 100, y2: 70 }, { type: 'line', x1: 50, y1: 0, x2: 50, y2: 100 }, { type: 'line', x1: 5, y1: 5, x2: 95, y2: 40 }] },
+  { target: "55,55 70,85 38,80", trapOffsets: [{ dx: -20, dy: -18, rot: 30 }, { dx: 16, dy: -22, rot: -20 }, { dx: -8, dy: 14, rot: 45 }, { dx: 20, dy: 10, rot: -35 }], decoys: [{ type: 'circle', cx: 20, cy: 25, r: 14 }, { type: 'rect', x: 65, y: 10, w: 22, h: 22, rot: -18 }, { type: 'line', x1: 0, y1: 60, x2: 100, y2: 40 }, { type: 'line', x1: 15, y1: 0, x2: 15, y2: 100 }] },
+  { target: "15,20 35,50 5,48", trapOffsets: [{ dx: 24, dy: -8, rot: 20 }, { dx: -10, dy: 20, rot: -30 }, { dx: 22, dy: 18, rot: 40 }, { dx: -14, dy: -16, rot: -25 }], decoys: [{ type: 'circle', cx: 72, cy: 65, r: 16 }, { type: 'rect', x: 55, y: 70, w: 24, h: 24, rot: 22 }, { type: 'line', x1: 0, y1: 75, x2: 100, y2: 95 }, { type: 'line', x1: 60, y1: 0, x2: 90, y2: 100 }, { type: 'line', x1: 40, y1: 10, x2: 40, y2: 90 }] },
+  { target: "80,15 95,50 62,45", trapOffsets: [{ dx: -20, dy: 15, rot: -30 }, { dx: -18, dy: -14, rot: 35 }, { dx: 10, dy: 20, rot: -20 }, { dx: -25, dy: 3, rot: 45 }], decoys: [{ type: 'circle', cx: 25, cy: 70, r: 15 }, { type: 'rect', x: 10, y: 20, w: 22, h: 22, rot: -15 }, { type: 'line', x1: 0, y1: 10, x2: 100, y2: 30 }, { type: 'line', x1: 35, y1: 95, x2: 55, y2: 5 }] },
+  { target: "35,75 55,42 20,38", trapOffsets: [{ dx: 22, dy: 10, rot: -25 }, { dx: -16, dy: -18, rot: 30 }, { dx: 20, dy: -16, rot: -40 }, { dx: -10, dy: 18, rot: 20 }], decoys: [{ type: 'circle', cx: 78, cy: 20, r: 13 }, { type: 'rect', x: 62, y: 60, w: 24, h: 24, rot: 18 }, { type: 'line', x1: 0, y1: 55, x2: 100, y2: 15 }, { type: 'line', x1: 70, y1: 0, x2: 70, y2: 100 }, { type: 'line', x1: 5, y1: 95, x2: 95, y2: 60 }] },
+  { target: "12,50 30,80 2,78", trapOffsets: [{ dx: 24, dy: -12, rot: 25 }, { dx: 20, dy: 14, rot: -30 }, { dx: -8, dy: -18, rot: 40 }, { dx: 26, dy: 4, rot: -20 }], decoys: [{ type: 'circle', cx: 68, cy: 25, r: 15 }, { type: 'rect', x: 55, y: 55, w: 26, h: 26, rot: -12 }, { type: 'line', x1: 0, y1: 20, x2: 100, y2: 45 }, { type: 'line', x1: 45, y1: 0, x2: 45, y2: 100 }, { type: 'line', x1: 90, y1: 0, x2: 60, y2: 100 }] },
+  { target: "65,20 82,55 48,50", trapOffsets: [{ dx: -22, dy: 18, rot: -35 }, { dx: -16, dy: -16, rot: 25 }, { dx: 12, dy: 20, rot: -45 }, { dx: -24, dy: 2, rot: 30 }, { dx: 8, dy: -20, rot: -15 }], decoys: [{ type: 'circle', cx: 20, cy: 70, r: 14 }, { type: 'rect', x: 8, y: 15, w: 20, h: 20, rot: 20 }, { type: 'line', x1: 0, y1: 90, x2: 100, y2: 60 }, { type: 'line', x1: 35, y1: 0, x2: 35, y2: 100 }, { type: 'line', x1: 5, y1: 5, x2: 60, y2: 95 }, { type: 'line', x1: 95, y1: 10, x2: 55, y2: 90 }] },
+  { target: "42,45 58,72 28,68", trapOffsets: [{ dx: 20, dy: -14, rot: 30 }, { dx: -18, dy: 16, rot: -25 }, { dx: 22, dy: 12, rot: -40 }, { dx: -14, dy: -18, rot: 35 }, { dx: 10, dy: 22, rot: -20 }], decoys: [{ type: 'circle', cx: 75, cy: 25, r: 13 }, { type: 'circle', cx: 15, cy: 20, r: 11 }, { type: 'rect', x: 60, y: 60, w: 24, h: 24, rot: 15 }, { type: 'line', x1: 0, y1: 35, x2: 100, y2: 15 }, { type: 'line', x1: 50, y1: 0, x2: 50, y2: 100 }, { type: 'line', x1: 0, y1: 95, x2: 100, y2: 75 }] },
+];
+
+function renderDecoy(d, i, onWrong) {
+  if (d.type === 'line') return <line key={i} fill="none" stroke={DIST_COLOR} strokeWidth="2" x1={d.x1} y1={d.y1} x2={d.x2} y2={d.y2} />;
+  if (d.type === 'circle') return <circle key={i} cx={d.cx} cy={d.cy} r={d.r} fill="transparent" stroke={DIST_COLOR} strokeWidth="2" style={{cursor:'pointer'}} tabIndex={0} role="button" aria-label="Возможный вариант фигуры" onClick={(e) => { e.stopPropagation(); onWrong(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onWrong(); } }} />;
+  if (d.type === 'rect') return <rect key={i} x={d.x} y={d.y} width={d.w} height={d.h} fill="transparent" stroke={DIST_COLOR} strokeWidth="2" transform={`rotate(${d.rot} ${d.x + d.w/2} ${d.y + d.h/2})`} style={{cursor:'pointer'}} tabIndex={0} role="button" aria-label="Возможный вариант фигуры" onClick={(e) => { e.stopPropagation(); onWrong(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onWrong(); } }} />;
+  return null;
+}
+
+function FigureTest({ onDone }) {
+  const [index, setIndex] = useState(0);
+  const [results, setResults] = useState([]);
+  const [feedback, setFeedback] = useState(null);
+  const startRef = useRef(Date.now());
+
+  useEffect(() => { startRef.current = Date.now(); setFeedback(null); }, [index]);
+
+  function advance(next) {
+    if (index < FIGURE_LEVELS.length - 1) setIndex(index + 1);
+    else onDone(next);
+  }
+
+  function handleHit(isCorrect) {
+    if (feedback === 'correct' || feedback === 'wrong') return;
+    const elapsed = Date.now() - startRef.current;
+    if (elapsed < MIN_REVEAL_MS) {
+      setFeedback('tooFast');
+      setTimeout(() => setFeedback(null), 550);
+      return;
+    }
+    const next = [...results, { correct: isCorrect, timeMs: elapsed }];
+    setResults(next);
+    setFeedback(isCorrect ? 'correct' : 'wrong');
+    setTimeout(() => advance(next), 650);
+  }
+
+  const level = FIGURE_LEVELS[index];
+  const hitTarget = inflate(level.target, 1.05);
+  const traps = (level.trapOffsets || []).map(t => buildTrapTriangle(level.target, t.dx, t.dy, t.rot));
+
+  return (
+    <div className="fig-wrap">
+      <div className="fig-progress">
+        {FIGURE_LEVELS.map((_, i) => (<div key={i} className={`fig-dot ${i < index ? 'done' : i === index ? 'active' : ''}`}></div>))}
+      </div>
+      <div className="fig-instruction">Найдите и коснитесь <b>спрятанного треугольника</b> — карточка {index + 1} из {FIGURE_LEVELS.length}. Похожих фигур несколько — верна только одна.</div>
+      <div className="fig-stage">
+        <svg viewBox="0 0 100 100" width="100%" height="100%" role="img" aria-label={`Визуальная головоломка ${index + 1} из ${FIGURE_LEVELS.length}`}>
+          <rect x="0" y="0" width="100" height="100" fill="transparent" onClick={() => handleHit(false)} />
+          {level.decoys.map((d, i) => renderDecoy(d, i, () => handleHit(false)))}
+          {traps.map((pts, i) => (
+            <polygon key={'trap'+i} points={pts} fill="transparent" stroke={DIST_COLOR} strokeWidth="2"
+              style={{cursor:'pointer'}} tabIndex={0} role="button" aria-label="Возможный вариант фигуры"
+              onClick={(e) => { e.stopPropagation(); handleHit(false); }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleHit(false); } }} />
+          ))}
+          <polygon points={level.target} fill="none" stroke={DIST_COLOR} strokeWidth="2" />
+          <polygon points={hitTarget} fill="transparent" stroke="none" tabIndex={0} role="button" aria-label="Здесь спрятан треугольник — нажмите, если нашли" onClick={(e) => { e.stopPropagation(); handleHit(true); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleHit(true); } }} />
+        </svg>
+      </div>
+      <div className="fig-feedback" role="status" aria-live="polite">
+        {feedback === 'correct' && '✓ Верно'}
+        {feedback === 'wrong' && '· Не совсем — фиксируем и идём дальше'}
+        {feedback === 'tooFast' && '· Слишком быстро — присмотритесь внимательнее'}
+      </div>
+      <div className="fig-hint">Засчитывается точность и скорость; среди похожих фигур верна только одна</div>
+    </div>
+  );
+}
+
+/* ==================== Тест сравнения похожих рисунков (Дж. Каган) — импульсивность/рефлексивность ====================
+   Оригинальная методика: 2 тренировочных + 12 карточек, эталон вверху + 8 похожих вариантов внизу,
+   только один идентичен эталону. Показатели: суммарное латентное время первого ответа + число ошибок
+   (Каган, 1966; рус. адаптация — psylab.info). Здесь: 20 карточек для большей надёжности, эталон
+   заменён абстрактной композицией фигур (реальные предметные рисунки Кагана защищены авторским правом),
+   6 вариантов вместо 8 — тот же принцип "найди точную копию среди почти идентичных". */
+const MATCH_SHAPES = ['circle', 'square', 'triangle', 'diamond'];
+const MATCH_COLORS = ['#0F6B5C', '#E1673F', '#B4790E', '#6B4FA0', '#2E6FA3'];
+const MATCH_SLOT_POS = [{ x: 25, y: 50 }, { x: 50, y: 50 }, { x: 75, y: 50 }];
+
+function standardFor(i) {
+  return MATCH_SLOT_POS.map((pos, k) => ({
+    shape: MATCH_SHAPES[(i * 2 + k * 3 + 1) % MATCH_SHAPES.length],
+    color: MATCH_COLORS[(i * 3 + k * 2 + 2) % MATCH_COLORS.length],
+    rot: (i * 40 + k * 25) % 360,
+    x: pos.x, y: pos.y,
+  }));
+}
+function alterVariant(standard, i, j) {
+  const copy = standard.map(s => ({ ...s }));
+  const slot = (i + j) % copy.length;
+  const attr = j % 3;
+  if (attr === 0) { const idx = MATCH_COLORS.indexOf(copy[slot].color); copy[slot].color = MATCH_COLORS[(idx + 1 + j) % MATCH_COLORS.length]; }
+  else if (attr === 1) { const idx = MATCH_SHAPES.indexOf(copy[slot].shape); copy[slot].shape = MATCH_SHAPES[(idx + 1 + j) % MATCH_SHAPES.length]; }
+  else { copy[slot].rot = (copy[slot].rot + 90 + j * 10) % 360; }
+  return copy;
+}
+function buildMatchTrial(i) {
+  const standard = standardFor(i);
+  const variants = [0, 1, 2, 3, 4].map(j => alterVariant(standard, i, j));
+  const correctSlot = (i * 3 + 2) % 6;
+  const options = []; let vi = 0;
+  for (let s = 0; s < 6; s++) {
+    if (s === correctSlot) options.push({ pattern: standard, correct: true });
+    else { options.push({ pattern: variants[vi], correct: false }); vi++; }
+  }
+  return { standard, options };
+}
+const MATCH_TRIALS = Array.from({ length: 20 }, (_, i) => buildMatchTrial(i));
+
+function renderMatchShape(s, key) {
+  const t = `rotate(${s.rot} ${s.x} ${s.y})`;
+  if (s.shape === 'circle') return <circle key={key} cx={s.x} cy={s.y} r="9" fill={s.color} transform={t} />;
+  if (s.shape === 'square') return <rect key={key} x={s.x - 8} y={s.y - 8} width="16" height="16" fill={s.color} transform={t} />;
+  if (s.shape === 'triangle') return <polygon key={key} points={`${s.x},${s.y - 10} ${s.x + 9},${s.y + 8} ${s.x - 9},${s.y + 8}`} fill={s.color} transform={t} />;
+  return <polygon key={key} points={`${s.x},${s.y - 10} ${s.x + 8},${s.y} ${s.x},${s.y + 10} ${s.x - 8},${s.y}`} fill={s.color} transform={t} />;
+}
+function PatternSvg({ pattern, size }) {
+  return (<svg viewBox="0 0 100 100" width={size} height={size}>{pattern.map((s, i) => renderMatchShape(s, i))}</svg>);
+}
+
+function MatchTest({ onDone }) {
+  const [index, setIndex] = useState(0);
+  const [results, setResults] = useState([]);
+  const [errorsThisTrial, setErrorsThisTrial] = useState(0);
+  const [feedback, setFeedback] = useState(null);
+  const [answered, setAnswered] = useState(false);
+  const startRef = useRef(Date.now());
+
+  useEffect(() => { startRef.current = Date.now(); setErrorsThisTrial(0); setFeedback(null); setAnswered(false); }, [index]);
+
+  const trial = MATCH_TRIALS[index];
+
+  function handlePick(opt) {
+    if (answered) return;
+    if (opt.correct) {
+      const elapsed = Date.now() - startRef.current;
+      const next = [...results, { timeMs: elapsed, errors: errorsThisTrial }];
+      setResults(next);
+      setFeedback('correct');
+      setAnswered(true);
+      setTimeout(() => { if (index < MATCH_TRIALS.length - 1) setIndex(index + 1); else onDone(next); }, 500);
+    } else {
+      setErrorsThisTrial(e => e + 1);
+      setFeedback('wrong');
+      setTimeout(() => setFeedback(null), 350);
+    }
+  }
+
+  return (
+    <div className="fig-wrap">
+      <div className="fig-progress">
+        {MATCH_TRIALS.map((_, i) => (<div key={i} className={`fig-dot ${i < index ? 'done' : i === index ? 'active' : ''}`}></div>))}
+      </div>
+      <div className="fig-instruction">Наверху — образец. Найдите внизу <b>точно такой же</b> набор фигур среди похожих — карточка {index + 1} из {MATCH_TRIALS.length}.</div>
+      <div className="match-standard"><PatternSvg pattern={trial.standard} size={110} /></div>
+      <div className="match-grid">
+        {trial.options.map((opt, i) => (
+          <button key={i} className="match-option" onClick={() => handlePick(opt)} aria-label={`Вариант ${i + 1}`}>
+            <PatternSvg pattern={opt.pattern} size={68} />
+          </button>
+        ))}
+      </div>
+      <div className="fig-feedback" role="status" aria-live="polite">
+        {feedback === 'correct' && '✓ Верно'}
+        {feedback === 'wrong' && '· Не то — попробуйте ещё'}
+      </div>
+      <div className="fig-hint">Считается время до первого верного ответа и число ошибок на каждой карточке</div>
+    </div>
+  );
+}
+
+/* ==================== Тест словесно-цветовой интерференции (Струп) — гибкость/ригидность контроля ====================
+   Оригинал: 3 карточки (слова / цвета / цветные слова), показатель ригидности = разница времени
+   T3−T2 (Дельбош/Струп; рус. адаптация — psylab.info, показатель Д. Бровермана). Здесь — интерактивная
+   адаптация под поштучные пробы с измерением времени реакции (стандартная практика компьютеризированных
+   версий теста Струпа): смесь конгруэнтных и неконгруэнтных проб, интерференция = разница среднего
+   времени ответа на неконгруэнтных и конгруэнтных пробах. */
+const STROOP_COLOR_HEX = { 'красный': '#C2483A', 'синий': '#2E6FA3', 'зелёный': '#1E8E5A', 'жёлтый': '#B4900E' };
+const STROOP_COLOR_NAMES = Object.keys(STROOP_COLOR_HEX);
+const STROOP_TRIALS = [
+  { word: 'красный', ink: 'красный' }, { word: 'синий', ink: 'жёлтый' }, { word: 'зелёный', ink: 'синий' }, { word: 'жёлтый', ink: 'зелёный' },
+  { word: 'синий', ink: 'синий' }, { word: 'красный', ink: 'зелёный' }, { word: 'жёлтый', ink: 'красный' }, { word: 'зелёный', ink: 'жёлтый' },
+  { word: 'синий', ink: 'красный' }, { word: 'зелёный', ink: 'зелёный' }, { word: 'красный', ink: 'синий' }, { word: 'жёлтый', ink: 'жёлтый' },
+  { word: 'синий', ink: 'зелёный' }, { word: 'зелёный', ink: 'красный' }, { word: 'красный', ink: 'жёлтый' }, { word: 'жёлтый', ink: 'синий' },
+  { word: 'синий', ink: 'жёлтый' }, { word: 'зелёный', ink: 'зелёный' }, { word: 'красный', ink: 'красный' }, { word: 'жёлтый', ink: 'зелёный' },
+];
+
+function StroopTest({ onDone }) {
+  const [index, setIndex] = useState(0);
+  const [results, setResults] = useState([]);
+  const [feedback, setFeedback] = useState(null);
+  const startRef = useRef(Date.now());
+
+  useEffect(() => { startRef.current = Date.now(); setFeedback(null); }, [index]);
+
+  const trial = STROOP_TRIALS[index];
+  const congruent = trial.word === trial.ink;
+
+  function handlePick(colorName) {
+    if (feedback) return;
+    const elapsed = Date.now() - startRef.current;
+    const correct = colorName === trial.ink;
+    const next = [...results, { correct, timeMs: elapsed, congruent }];
+    setResults(next);
+    setFeedback(correct ? 'correct' : 'wrong');
+    setTimeout(() => { if (index < STROOP_TRIALS.length - 1) setIndex(index + 1); else onDone(next); }, 350);
+  }
+
+  return (
+    <div className="fig-wrap">
+      <div className="fig-progress">
+        {STROOP_TRIALS.map((_, i) => (<div key={i} className={`fig-dot ${i < index ? 'done' : i === index ? 'active' : ''}`}></div>))}
+      </div>
+      <div className="fig-instruction">Нажмите кнопку с цветом, которым <b>написано слово</b> — не с тем цветом, что оно означает. Проба {index + 1} из {STROOP_TRIALS.length}.</div>
+      <div className="stroop-word" style={{ color: STROOP_COLOR_HEX[trial.ink] }}>{trial.word.toUpperCase()}</div>
+      <div className="stroop-buttons">
+        {STROOP_COLOR_NAMES.map(name => (
+          <button key={name} className="stroop-btn" style={{ background: STROOP_COLOR_HEX[name] }} onClick={() => handlePick(name)} aria-label={name}></button>
+        ))}
+      </div>
+      <div className="fig-feedback" role="status" aria-live="polite">
+        {feedback === 'correct' && '✓ Верно'}
+        {feedback === 'wrong' && '· Неверно'}
+      </div>
+      <div className="fig-hint">Отвечайте как можно быстрее, ориентируясь именно на цвет букв</div>
+    </div>
+  );
+}
+
+/* ==================== Предметы и рекомендации ==================== */
+const SUBJECTS = ["Физическая культура", "Математика", "Русский язык / литература", "История и обществознание", "Естественные науки", "Другое"];
+
+const TIPS_FDFI = {
+  "полезависимый": [
+    "Начинайте объяснение с целостного показа: сначала продемонстрируйте готовый пример или результат целиком, а потом переходите к деталям.",
+    "Используйте групповую работу и обсуждение — так материал усваивается легче, чем через самостоятельное чтение инструкции.",
+    "Подкрепляйте объяснение наглядными образами и связями с реальной жизнью.",
+    "Проверяйте понимание через вопрос «как это связано с...», а не через изолированное повторение правила.",
+    "Не спешите переходить к самостоятельной работе — сначала разберите пример вместе.",
+    "Хвалите за сам процесс совместной работы, а не только за итоговый результат.",
+  ],
+  "поленезависимый": [
+    "Дайте чёткую пошаговую инструкцию — такой студент предпочитает разбираться самостоятельно по алгоритму.",
+    "Не навязывайте групповое обсуждение — предложите его как опцию, а не обязательный этап.",
+    "Ставьте задачи, требующие анализа и вычленения структуры.",
+    "Дайте время на самостоятельную работу до совместного разбора.",
+    "Используйте абстрактные и логические объяснения — их не обязательно каждый раз подкреплять образами.",
+    "Не форсируйте обратную связь в моменте — дайте время обдумать ответ.",
+  ],
+  "смешанный": [
+    "Начните с целостного примера, но сразу дайте и структуру по шагам.",
+    "Предлагайте выбор формата работы и наблюдайте, что срабатывает лучше именно у этого студента.",
+    "Чередуйте наглядные образы и абстрактные схемы в рамках одной темы.",
+    "Проверяйте понимание и через диалог, и через самостоятельное применение правила.",
+    "Наблюдайте, какой формат преобладает в конкретной теме — стиль может смещаться в зависимости от предмета.",
+  ],
+};
+
+const SUBJECT_TIPS = {
+  "Физическая культура": {
+    "полезависимый": [
+      "Используйте целостный метод обучения движению: показывайте технику целиком, не дробя на элементы с первого раза — по Холодову и Кузнецову («Теория и методика физического воспитания и спорта»), этот метод подходит именно для структурно несложных, но контекстно-значимых действий.",
+      "Такой студент часто сильнее проявляет себя в командных видах спорта — Е.П. Ильин («Психология спорта») описывает «спортсменов-коллективистов», которые результативнее выступают в командных, а не личных состязаниях.",
+      "Применяйте взаимное обучение — пусть студенты анализируют технику друг друга в парах; для полезависимых это обычно продуктивнее разбора в одиночку.",
+      "Вплетайте показ техники в игровую ситуацию, а не в абстрактное упражнение — контекст помогает удержать движение в памяти.",
+    ],
+    "поленезависимый": [
+      "Используйте расчленённо-конструктивный метод: разбейте сложное движение на фазы (по Богену, «Обучение двигательным действиям») и дайте отработать каждую фазу отдельно, прежде чем соединять в целое.",
+      "Такой студент часто сильнее проявляет себя в индивидуальных видах спорта — по данным Е.П. Ильина, «спортсмены-индивидуалисты» результативнее в личных, а не командных состязаниях.",
+      "Не торопите с объединением фаз в целостное движение — дайте время закрепить каждый элемент самостоятельно.",
+      "Наглядная схема движения по фазам (кинограмма, разбор по кадрам) работает эффективнее общего показа целиком.",
+    ],
+    "смешанный": [
+      "Комбинируйте методы, как рекомендуют Холодов и Кузнецов при разучивании сложных движений: сначала целостный показ, затем расчленённо-конструктивный разбор по фазам, в конце — снова целостное выполнение.",
+      "Наблюдайте, что вызывает больше вовлечённости — командный или индивидуальный формат — у конкретного студента в конкретном виде спорта.",
+      "Чередуйте командные эстафеты и индивидуальную отработку техники в рамках одного занятия.",
+    ],
+  },
+  "Математика": {
+    "полезависимый": ["Начинайте с целостного примера решения задачи, потом переходите к алгоритму по шагам.", "Разбирайте задачи в мини-группах, а не только у доски в одиночку."],
+    "поленезависимый": ["Дайте чёткий алгоритм решения и время поработать самостоятельно, прежде чем обсуждать в классе.", "Такой студент часто быстрее разбирается через самостоятельный разбор формул, чем через устное объяснение."],
+    "смешанный": ["Сочетайте общий пример и пошаговый алгоритм в одном объяснении."],
+  },
+  "Русский язык / литература": {
+    "полезависимый": ["Обсуждайте текст в группе, ищите личные ассоциации с прочитанным.", "Начинайте с общего впечатления от текста, потом переходите к разбору деталей."],
+    "поленезависимый": ["Дайте чёткую структуру разбора (план анализа текста) для самостоятельной работы.", "Не требуйте немедленного устного ответа — дайте время сформулировать мысль письменно."],
+    "смешанный": ["Соединяйте общее обсуждение текста с самостоятельным письменным анализом."],
+  },
+  "История и обществознание": {
+    "полезависимый": ["Ведите занятие через дискуссию и разбор конкретных ситуаций и персоналий.", "Связывайте события с личным/социальным контекстом, а не только с датами."],
+    "поленезависимый": ["Дайте структурированную хронологию или схему причинно-следственных связей для самостоятельного анализа.", "Дайте возможность высказаться позже, обдуманно, а не сразу в дискуссии."],
+    "смешанный": ["Совмещайте общую картину эпохи с чёткой структурой фактов и дат."],
+  },
+  "Естественные науки": {
+    "полезависимый": ["Начинайте с демонстрации опыта целиком, потом разбирайте механизм по этапам.", "Работа в парах/группах над лабораторной работой заходит лучше, чем в одиночку."],
+    "поленезависимый": ["Дайте чёткий протокол лабораторной работы для самостоятельного выполнения.", "Такому студенту проще через анализ данных и графиков, чем через общее наблюдение за опытом."],
+    "смешанный": ["Сочетайте демонстрацию опыта целиком с чёткой процедурой лабораторной работы."],
+  },
+};
+
+const STYLE_EXPLAIN_FDFI = {
+  "полезависимый": "восприятие сильно опирается на контекст и целостную картину; легче учиться через общий пример, обсуждение и связь с реальной ситуацией.",
+  "поленезависимый": "легко вычленяются детали и структура независимо от контекста; легче учиться через самостоятельный разбор по шагам и чёткий алгоритм.",
+  "смешанный": "выраженного полюса нет — студент примерно одинаково опирается и на общую картину, и на структуру.",
+};
+
+const TEACHER_REFLECTION_FDFI = {
+  "полезависимый": [
+    "Вы, скорее всего, тяготеете к целостному методу показа и командным видам спорта — по Холодову и Кузнецову, это сильная сторона при разучивании структурно несложных, контекстных движений и при мотивации класса через совместную деятельность.",
+    "Риск: можно непроизвольно применять только целостный метод и дискуссионные разборы, даже когда студенту нужен расчленённо-конструктивный подход — пошаговая отработка фаз движения (по Богену).",
+    "Осознанно закладывайте в план урока и разбор движения по фазам — специально для поленезависимых студентов в классе.",
+  ],
+  "поленезависимый": [
+    "Вы, скорее всего, тяготеете к расчленённо-конструктивному методу и индивидуальным видам активности — по Богену, это помогает в точности техники и дисциплине разучивания сложных движений.",
+    "Риск: можно недооценивать целостный метод и командную работу — а именно они нужны полезависимым студентам, чтобы уловить смысл движения через общий образ и контекст.",
+    "Осознанно закладывайте в план урока моменты целостного показа и командного взаимодействия — специально для полезависимых студентов в классе.",
+  ],
+  "смешанный": [
+    "Вы, скорее всего, легко сочетаете целостный и расчленённо-конструктивный методы — именно эта комбинация рекомендуется Холодовым и Кузнецовым при разучивании сложных движений.",
+    "Используйте эту гибкость осознанно: наблюдайте, какой метод и формат работает лучше для конкретной группы, не полагайтесь только на интуицию.",
+  ],
+};
+
+/* ==================== Импульсивность / рефлексивность — общие рекомендации ====================
+   Не привязаны к конкретному виду спорта (в отличие от FDFI) — это отдельная линия исследований
+   (Дж. Каган и последователи), общепедагогические выводы, без специализированной базы по физкультуре. */
+const TIPS_IR = {
+  "импульсивный": [
+    "Дайте время на обдумывание перед ответом — техника «пауза перед ответом» (аналог педагогического приёма «wait time») снижает число случайных ошибок.",
+    "Разбивайте задание на этапы с промежуточной самопроверкой, а не давайте выполнить всё сразу.",
+    "Учите проговаривать план действия вслух или письменно перед началом — это тормозит импульсивную первую реакцию.",
+    "Не давайте сразу много альтернатив на выбор — сокращайте набор вариантов на старте освоения материала.",
+    "Хвалите за проверку своей работы, а не только за скорость выполнения.",
+  ],
+  "рефлексивный": [
+    "Не торопите с ответом — давление ограниченного времени снижает качество решения именно у этого типа студентов.",
+    "Такой студент хорошо справляется с многошаговыми, комплексными задачами — не упрощайте их искусственно.",
+    "Работа в собственном темпе даёт лучший результат, чем работа «под общий счёт» группы.",
+    "Хвалите за тщательность анализа, а не только за итоговый результат.",
+    "Не подгоняйте, если студент перепроверяет уже правильный ответ — это часть его продуктивной стратегии.",
+  ],
+  "смешанный": [
+    "Темп принятия решения у такого студента может меняться в зависимости от сложности и типа задачи — понаблюдайте, в каких ситуациях он торопится, а в каких — нет.",
+    "Предлагайте оба формата (с ограничением по времени и без) и смотрите, какой даёт более качественный результат именно на этом материале.",
+  ],
+};
+const STYLE_EXPLAIN_IR = {
+  "импульсивный": "решения принимаются быстро, часто без анализа всех альтернатив — это повышает скорость реакции, но и число ошибочных первых попыток.",
+  "рефлексивный": "перед ответом — тщательный анализ альтернатив, темп медленнее, но ошибок меньше за счёт предварительной проверки гипотез.",
+  "смешанный": "выраженного полюса нет — скорость и тщательность принятия решений примерно сбалансированы.",
+};
+const TEACHER_REFLECTION_IR = {
+  "импульсивный": [
+    "Вы, вероятно, реагируете и принимаете решения на занятии быстро — это помогает держать темп занятия, но может означать мало времени «на подумать» для студентов (особенно рефлексивных).",
+    "Риск: можно неосознанно поторапливать студентов с ответом. Осознанно закладывайте паузу после вопроса, прежде чем спрашивать/подсказывать.",
+  ],
+  "рефлексивный": [
+    "Вы, вероятно, тщательно обдумываете решения на занятии — это даёт более взвешенную обратную связь студентам, но может замедлять темп занятия.",
+    "Риск: импульсивным студентам может не хватать вашего темпа для удержания внимания. Закладывайте более короткие, чётко ограниченные по времени блоки для них.",
+  ],
+  "смешанный": [
+    "Вы, вероятно, гибко меняете темп в зависимости от ситуации на занятии — сильная сторона при разнородном классе.",
+    "Осознанно отслеживайте, не подстраиваетесь ли вы под собственный привычный темп чаще, чем под темп конкретного студента.",
+  ],
+};
+
+/* ==================== Гибкость / ригидность познавательного контроля — общие рекомендации ==================== */
+const TIPS_FRC = {
+  "ригидный": [
+    "Переключение между разными типами заданий даётся сложнее — давайте явный сигнал/паузу при смене типа задания, не переключайте резко.",
+    "На этапе освоения нового материала используйте задания с чёткой, неизменной структурой — не смешивайте форматы сразу.",
+    "Вводите чередующиеся/смешанные задания постепенно, малыми порциями, а не одним большим блоком.",
+    "Не давайте задания с намеренно противоречивой/конфликтующей информацией на этапе первого знакомства с темой.",
+    "Дайте больше времени на задания, требующие игнорировать привычный, автоматический способ действия ради нового.",
+  ],
+  "гибкий": [
+    "Такой студент легко переключается между разными типами заданий и способами решения — можно свободно чередовать форматы в рамках одного занятия.",
+    "Слишком единообразные, повторяющиеся задания могут снижать вовлечённость — вносите разнообразие.",
+    "Хорошо работает в условиях смены правил «на ходу» и многозадачности — можно использовать это в групповых/игровых форматах.",
+    "Не нужно искусственно упрощать структуру заданий — гибкость контроля позволяет работать со смешанными форматами сразу.",
+  ],
+  "смешанный": [
+    "Переносимость смены заданий у такого студента может зависеть от конкретного материала — понаблюдайте, где переключение даётся легко, а где — нет.",
+    "Постепенно увеличивайте долю смешанных/чередующихся заданий, ориентируясь на реакцию именно этого студента.",
+  ],
+};
+const STYLE_EXPLAIN_FRC = {
+  "ригидный": "переключение между разными способами переработки информации в ситуации конфликта (например, между привычным и новым способом действия) даётся с трудом и требует больше времени и усилий.",
+  "гибкий": "переключение между разными способами переработки информации происходит легко, даже в ситуации конфликта между привычным и новым способом действия.",
+  "смешанный": "выраженного полюса нет — переключаемость между способами действия скорее средняя.",
+};
+const TEACHER_REFLECTION_FRC = {
+  "ригидный": [
+    "Вам, вероятно, комфортнее вести занятие по чёткой, заранее выстроенной структуре, без резких смен формата — это помогает удерживать дисциплину и последовательность подачи материала.",
+    "Риск: гибким студентам может быть скучно при слишком единообразной подаче. Периодически закладывайте элементы смены формата, даже если вам самим это менее комфортно.",
+  ],
+  "гибкий": [
+    "Вам, вероятно, легко менять формат и структуру занятия «на ходу» — сильная сторона при непредсказуемых ситуациях на занятии.",
+    "Риск: ригидным студентам частая смена формата может даваться тяжелее. Закладывайте предсказуемую структуру хотя бы на этапе введения новой темы.",
+  ],
+  "смешанный": [
+    "Вы, вероятно, переключаете формат занятия в зависимости от ситуации — сильная сторона при разнородном классе.",
+    "Осознанно отслеживайте, насколько часто смена формата продиктована реальной необходимостью, а не привычкой.",
+  ],
+};
+
+/* ==================== Советы студенту о себе (видит студент после тестов) ==================== */
+const STUDENT_TIPS = {
+  fdfi: {
+    "полезависимый": [
+      "Вам легче понять новое движение, когда вы сначала видите его целиком — внимательно смотрите показ и повторяйте за преподавателем.",
+      "Вам помогает работа в паре или группе — не стесняйтесь обсуждать технику с одногруппниками и преподавателем.",
+      "Связывайте упражнение с игровой или реальной ситуацией — так оно лучше запоминается.",
+    ],
+    "поленезависимый": [
+      "Вам легче разбирать движение по шагам — просите объяснить фазы по порядку.",
+      "Вы хорошо работаете самостоятельно по инструкции, схеме или карточке с заданием.",
+      "Проверяйте себя сами: сравнивайте своё выполнение с образцом или видеозаписью.",
+    ],
+    "смешанный": [
+      "Вам подходят и показ целиком, и разбор по шагам — пробуйте оба способа и замечайте, какой помогает в конкретном упражнении.",
+    ],
+  },
+  ir: {
+    "импульсивный": [
+      "Вы быстро принимаете решения. Перед выполнением делайте короткую паузу и проговаривайте про себя, что нужно сделать.",
+      "Лучше меньше попыток, но точнее: после каждой проверяйте, что получилось.",
+    ],
+    "рефлексивный": [
+      "Вы действуете обдуманно и точно — это сильная сторона. Не бойтесь пробовать, даже если ещё не всё продумали.",
+      "Если торопят, возьмите пару секунд на подготовку — это нормально.",
+    ],
+    "смешанный": [
+      "Ваш темп меняется в зависимости от задания — замечайте, когда вы торопитесь, а когда слишком долго обдумываете.",
+    ],
+  },
+  frc: {
+    "ригидный": [
+      "Вам комфортнее, когда задание не меняется резко. Если правила поменялись — сделайте паузу и уточните, что теперь нужно.",
+      "Новые варианты упражнения осваивайте постепенно, когда основной уже получается.",
+    ],
+    "гибкий": [
+      "Вы легко переключаетесь между заданиями — вам подходят игровые форматы и эстафеты со сменой правил.",
+      "Следите, чтобы при частой смене заданий не страдала точность техники.",
+    ],
+    "смешанный": [
+      "Переключение даётся по-разному — замечайте, какие смены заданий даются легко, а какие нет.",
+    ],
+  },
+};
+const STYLE_ORDER = {
+  fdfi: ["полезависимый", "смешанный", "поленезависимый"],
+  ir: ["импульсивный", "смешанный", "рефлексивный"],
+  frc: ["гибкий", "смешанный", "ригидный"],
+};
+const REC_KEY = { fdfi: 'fdfiStyle', ir: 'irStyle', frc: 'frcStyle' };
+
+/* ==================== Метаданные измерений когнитивного стиля ==================== */
+const DIMENSIONS = {
+  fdfi: { label: "Полезависимость / поленезависимость", testName: "Тест включённых фигур (по Уиткину), 20 уровней", hasSubject: true },
+  ir: { label: "Импульсивность / рефлексивность", testName: "Тест сравнения похожих рисунков (по Кагану), 20 карточек", hasSubject: false },
+  frc: { label: "Гибкость / ригидность познавательного контроля", testName: "Тест словесно-цветовой интерференции (Струп), 20 проб", hasSubject: false },
+};
+const TIPS_BY_DIM = { fdfi: TIPS_FDFI, ir: TIPS_IR, frc: TIPS_FRC };
+const STYLE_EXPLAIN_BY_DIM = { fdfi: STYLE_EXPLAIN_FDFI, ir: STYLE_EXPLAIN_IR, frc: STYLE_EXPLAIN_FRC };
+const TEACHER_REFLECTION_BY_DIM = { fdfi: TEACHER_REFLECTION_FDFI, ir: TEACHER_REFLECTION_IR, frc: TEACHER_REFLECTION_FRC };
+
+/* ==================== Данные по видам спорта и темам (сгенерировано из методических материалов) ==================== */
+const PE_SPORTS = {
+  "Лёгкая атлетика": [
+    "Низкий старт",
+    "Высокий старт",
+    "Бег на короткие дистанции (спринт)",
+    "Бег на средние дистанции",
+    "Бег на длинные дистанции",
+    "Прыжок в длину",
+    "Челночный бег",
+    "Кросс",
+    "Метание мяча",
+    "Эстафетный бег"
+  ],
+  "Борьба (самбо)": [
+    "Самостраховка (падение на спину, на бок, вперёд)",
+    "Стойки и передвижения",
+    "Захваты",
+    "Переводы в партер",
+    "Бросок через бедро (первый и базовый бросок в программе)"
+  ],
+  "Волейбол": [
+    "Нижний приём мяча",
+    "Верхний приём мяча",
+    "Нижняя передача",
+    "Верхняя передача",
+    "Подача (нижняя и верхняя)",
+    "Нападающий удар"
+  ],
+  "Пионербол": [
+    "Ловля мяча",
+    "Подача/бросок через сетку",
+    "Передача партнёру (пас)"
+  ],
+  "Лапта": [
+    "Удар битой по мячу",
+    "Ловля и осаливание мяча (действия в поле)"
+  ],
+  "Баскетбол": [
+    "Ведение мяча",
+    "Передача мяча",
+    "Бросок"
+  ],
+  "Футбол": [
+    "Приём мяча (остановка)",
+    "Ведение мяча",
+    "Передача мяча",
+    "Удар по мячу",
+    "Действия вратаря"
+  ],
+  "Плавание": [
+    "Кроль на груди",
+    "Кроль на спине",
+    "Брасс",
+    "Старт (прыжок с тумбы)"
+  ],
+  "Лыжная подготовка": [
+    "Попеременный двухшажный ход (виды передвижения)",
+    "Одновременные ходы (бесшажный, одношажный)",
+    "Торможение и повороты (плугом, упором)",
+    "Подъёмы и спуски"
+  ],
+  "Гимнастика": [
+    "Кувырки (вперёд и назад)",
+    "Стойка на лопатках",
+    "Мостик",
+    "Равновесие на бревне (низком)",
+    "Скакалка (короткая)",
+    "Длинная скакалка",
+    "Полушпагат"
+  ],
+  "Флорбол": [
+    "Ведение мяча (клюшкой)",
+    "Приём мяча",
+    "Удар (бросок) по воротам",
+    "Действия вратаря"
+  ],
+  "Гандбол": [
+    "Ведение мяча",
+    "Приём мяча (ловля)",
+    "Движение с мячом (учёт правила шагов)",
+    "Действия вратаря"
+  ],
+  "ОФП и ГТО": [
+    "Построение комплекса общеразвивающих упражнений (ОРУ)",
+    "Подготовка к сдаче нормативов ГТО"
+  ]
+};
+
+const PE_TOPIC_DATA = {
+  "Лёгкая атлетика": {
+    "Низкий старт": {
+      "полезависимый": {
+        "method": "Целостный: сразу бег «старт → стартовый разгон → переход в бег» на короткой дистанции, в формате мини-гонки с соперником",
+        "exercises": "Парные старты «кто быстрее» на выбывание; эстафетные старты в команде",
+        "form": "Парная/групповая, с элементом соперничества",
+        "feedback": "Сравнение с соперником, реакция группы",
+        "avoid": "Долгого разбора постановки рук на старте в отрыве от реального бега"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо-конструктивный по этапам: 1) многократное принятие стартового положения по командам «На старт!»–«Внимание!» до нахождения оптимальной позы 2) имитация движений старта без бега 3) бег с низкого старта на отрезках 10–15 м 4) бег 30–40 м с акцентом на длину и частоту первых шагов",
+        "exercises": "Прыжки из стартовых колодок по прямой с концентрацией на активном проталкивании; бег на отрезках 30–40 м с фиксацией времени",
+        "form": "Индивидуальная, самоконтроль по секундомеру",
+        "feedback": "Конкретное время реакции и разгона в цифрах",
+        "avoid": "Перехода к бегу на дистанции, пока не закреплено само стартовое положение"
+      },
+      "смешанный": {
+        "method": "Показ целостного старта → разбор по этапам (как для поленезависимых) → снова целостный старт с зачётом",
+        "exercises": "Комбинация: 1–2 упражнения на технику индивидуально, затем парные старты",
+        "form": "Чередование индивидуальной и парной части",
+        "feedback": "Оба формата поочерёдно",
+        "avoid": "—"
+      }
+    },
+    "Высокий старт": {
+      "полезависимый": {
+        "method": "Целостный показ старта сразу в игровой ситуации («старты по сигналу во время ходьбы в наклоне»)",
+        "exercises": "Старты парами по внезапному сигналу; игра «Замри-беги» в группе",
+        "form": "Групповая, соревновательная",
+        "feedback": "Внешняя — от партнёра/группы",
+        "avoid": "Изолированного разбора без игрового контекста"
+      },
+      "поленезависимый": {
+        "method": "Расчленённый: 1) высокий старт из разных исходных положений 2) старт с опорой на одну руку (подводящее к низкому старту) 3) старты во время ходьбы в наклоне по сигналу преподавателя 4) бег с высокого старта на коротких отрезках",
+        "exercises": "Старт с опорой на одну руку отдельно от бега; отработка каждого исходного положения до автоматизма",
+        "form": "Индивидуальная, пошаговая",
+        "feedback": "Время реакции на сигнал, цифры",
+        "avoid": "Смешивания всех исходных положений с самого начала"
+      },
+      "смешанный": {
+        "method": "Показ целиком → разбор по этапам → бег с зачётом",
+        "exercises": "Комбинация индивидуальной отработки + парных стартов",
+        "form": "Смешанная",
+        "feedback": "Оба формата",
+        "avoid": "—"
+      }
+    },
+    "Бег на короткие дистанции (спринт)": {
+      "полезависимый": {
+        "method": "Целостный бег на отрезках сразу в соревновательном/игровом формате",
+        "exercises": "Эстафеты на скорость в командах; парные забеги с гандикапом слабейшему",
+        "form": "Групповая/поточная, соревновательная",
+        "feedback": "Место в забеге, реакция группы",
+        "avoid": "Долгой отработки ритма шага в одиночку без соревновательного контекста"
+      },
+      "поленезависимый": {
+        "method": "Расчленённый: бег с высоким подниманием бедра (30 м × 3) → быстрый бег через отметки для ритма (30–40 м × 6) → бег с поворота на прямую → постепенное наращивание отрезков (60–80 м, затем 150–200 м)",
+        "exercises": "Бег через размеченные отметки для отработки ритма шага; бег с максимальной скоростью на отрезках 60–80 м (4 раза)",
+        "form": "Индивидуальная, с фиксацией времени на каждом отрезке",
+        "feedback": "Точное время на отрезке, сравнение с личным рекордом",
+        "avoid": "Бега «на результат» до автоматизации техники постановки стопы"
+      },
+      "смешанный": {
+        "method": "Целостный забег → разбор техники по элементам → повторный забег",
+        "exercises": "Сочетание разметки для ритма + командных эстафет",
+        "form": "Чередование",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Бег на средние дистанции": {
+      "полезависимый": {
+        "method": "Ознакомление через групповую пробежку 80–100 м с последующим общим разбором впечатлений",
+        "exercises": "Бег «в затылок» за более сильным партнёром, задающим темп; групповые интервальные отрезки",
+        "form": "Групповая",
+        "feedback": "От партнёра по темпу и от группы",
+        "avoid": "Изолированного бега в одиночку без ориентира"
+      },
+      "поленезависимый": {
+        "method": "То же ознакомление, но следующий шаг — индивидуальный протокол: преподаватель фиксирует именно ваши грубые ошибки (постановка стопы, наклон туловища, работа рук) для персональной коррекции",
+        "exercises": "Бег с самостоятельным контролем темпа по секундомеру на отрезках; работа над конкретной ошибкой техники (например, отдельно — наклон туловища)",
+        "form": "Индивидуальная",
+        "feedback": "Конкретный протокол ошибок с числовыми показателями",
+        "avoid": "Бега без выявленной индивидуальной ошибки для коррекции"
+      },
+      "смешанный": {
+        "method": "Групповая пробежка для ознакомления → индивидуальный разбор ошибок → повторная пробежка в группе",
+        "exercises": "Групповой темповый бег + индивидуальная коррекция 1 ошибки за занятие",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Бег на длинные дистанции": {
+      "полезависимый": {
+        "method": "Групповой бег с ориентиром на лидера группы, общий финиш «командой»",
+        "exercises": "Групповой длительный бег с лидером; командный «эстафетный» кросс",
+        "form": "Групповая",
+        "feedback": "От группы, ощущение «не отстать»",
+        "avoid": "Бега в полном одиночестве без ориентира на старте"
+      },
+      "поленезависимый": {
+        "method": "Индивидуальный план темпа: медленный бег 1–2,5 часа в постоянном темпе ИЛИ бег в высоком темпе 10–45 минут (интервально) — по личному графику",
+        "exercises": "Контроль пульса и времени на контрольных отрезках; личный дневник тренировок",
+        "form": "Индивидуальная",
+        "feedback": "Цифры — пульс, время на отрезках, личная динамика",
+        "avoid": "Отсутствия чёткого индивидуального плана/цели на дистанцию"
+      },
+      "смешанный": {
+        "method": "Часть дистанции в группе, часть — по индивидуальному плану",
+        "exercises": "Сочетание группового старта и индивидуального финиша",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Прыжок в длину": {
+      "полезависимый": {
+        "method": "Целостный показ всего прыжка (разбег → отталкивание → полёт → приземление) сразу в формате соревнования на дальность",
+        "exercises": "Командное соревнование на дальность; парные прыжки «кто дальше»",
+        "form": "Групповая, соревновательная",
+        "feedback": "Место в соревновании, реакция группы",
+        "avoid": "Долгой изолированной отработки одной фазы без итогового прыжка"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо-конструктивный по этапам: 1) прыжки на одной ноге из круга в круг (отработка отталкивания) 2) прыжки через размеченные «канавки» 3) имитация отталкивания на месте 4) прыжки с небольшого разбега (4–6 шагов) с возвышения 5) постепенное наращивание длины разбега",
+        "exercises": "Прыжки из круга в круг; имитация отталкивания без прыжка; прыжки с 4–6 шагов разбега с фиксацией результата",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Сантиметры, сравнение с личным предыдущим результатом",
+        "avoid": "Перехода к полному разбегу до закрепления отталкивания и приземления"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка по этапам → прыжок с полного разбега на зачёт",
+        "exercises": "Комбинация: этапная отработка + финальное соревнование",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Челночный бег": {
+      "полезависимый": {
+        "method": "Целостно, сразу полная дистанция (например, 3×10 м) в формате парного забега «кто быстрее»",
+        "exercises": "Парные и командные забеги на выбывание",
+        "form": "Парная/групповая",
+        "feedback": "Сравнение с соперником",
+        "avoid": "Долгой отработки техники разворота в одиночку без забегов"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) отработка старта отдельно 2) отработка стопорящего шага и разворота на месте (без бега) 3) бег на одном коротком отрезке с разворотом 4) полная дистанция с фиксацией времени",
+        "exercises": "Имитация стопорящего шага и поворота стопы на 90° без бега; бег с касанием пола/переносом кубика по элементам",
+        "form": "Индивидуальная",
+        "feedback": "Точное время (до 0,1 сек), сравнение с личным результатом",
+        "avoid": "Полных дистанций на скорость до закрепления техники разворота (риск падений/потери темпа)"
+      },
+      "смешанный": {
+        "method": "Показ полной дистанции целиком → отдельная отработка разворота → полная дистанция на зачёт",
+        "exercises": "Комбинация точечной отработки разворота + забегов",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Кросс": {
+      "полезависимый": {
+        "method": "Групповой бег по пересечённой местности с ориентиром на партнёра или группу",
+        "exercises": "Командный кросс с общим результатом (сумма/среднее время команды)",
+        "form": "Групповая",
+        "feedback": "Общий результат команды, поддержка группы",
+        "avoid": "Дистанции в полном одиночестве без ориентиров"
+      },
+      "поленезависимый": {
+        "method": "Индивидуальный план прохождения дистанции с контролем темпа на контрольных точках",
+        "exercises": "Личный протокол прохождения дистанции с отметками времени на контрольных точках",
+        "form": "Индивидуальная",
+        "feedback": "Личное время на контрольных точках",
+        "avoid": "Бега «толпой» без личного плана темпа"
+      },
+      "смешанный": {
+        "method": "Общий старт группой → индивидуальный темп на дистанции → общий финиш",
+        "exercises": "Групповой старт с индивидуальным заданием по темпу",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Метание мяча": {
+      "полезависимый": {
+        "method": "Целостный показ всей фазы (разбег → отведение снаряда → бросок) сразу, в формате соревнования на дальность",
+        "exercises": "Парное/командное соревнование на дальность броска",
+        "form": "Групповая, соревновательная",
+        "feedback": "Место в соревновании",
+        "avoid": "Долгой отработки отведения снаряда без итогового броска"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо по этапам: 1) создание представления о технике — показ сбоку и сзади, кинограммы 2) отведение снаряда на месте под счёт («раз-два-три») 3) бег скрестными шагами с отведённым снарядом без броска 4) бег 20–30 м с рукой над плечом 5) полное движение с броском",
+        "exercises": "Имитация отведения снаряда под счёт; бег скрестным шагом без броска; постепенное добавление броска",
+        "form": "Индивидуальная, пошаговая, под счёт",
+        "feedback": "Метры, сравнение с личным результатом",
+        "avoid": "Полного броска с разбега до закрепления отдельных фаз"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка по счёту каждой фазы → бросок с полного разбега",
+        "exercises": "Комбинация счётной отработки фаз + финальные броски на дальность",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Эстафетный бег": {
+      "полезависимый": {
+        "method": "С самого начала — работа в команде целиком, акцент на слаженность и доверие партнёру через реальные забеги",
+        "exercises": "Командные эстафеты целиком с самого начала; смена ролей (кто на каком этапе)",
+        "form": "Командная с первого занятия",
+        "feedback": "Результат команды, слаженность",
+        "avoid": "Разбора техники передачи в отрыве от реальной командной динамики"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) рассказ о видах эстафет 2) объяснение техники передачи палочки способами «снизу»/«сверху» 3) отработка передачи стоя на месте в шеренгах (без бега) 4) передача на медленном беге 5) передача на полной скорости в 20-метровой зоне",
+        "exercises": "Отработка передачи палочки стоя в шеренгах на расстоянии 1–2 м друг от друга; постепенное увеличение скорости",
+        "form": "Парная (отработка передачи), затем командная",
+        "feedback": "Точность попадания в 20-метровую зону, число уроненных палочек",
+        "avoid": "Забегов на полной скорости до закрепления передачи на месте"
+      },
+      "смешанный": {
+        "method": "Объяснение и показ целиком → отдельная отработка передачи на месте → полноценные забеги",
+        "exercises": "Отработка передачи на месте (1–2 подхода) + командные забеги",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Борьба (самбо)": {
+    "Самостраховка (падение на спину, на бок, вперёд)": {
+      "полезависимый": {
+        "method": "Целостный: сразу полный кувырок вперёд с самостраховкой как единое движение, с взаимной подстраховкой партнёра",
+        "exercises": "Парные перекаты «зеркалом» — один показывает, партнёр повторяет; взаимная подстраховка при падении",
+        "form": "Парная, с взаимной подстраховкой",
+        "feedback": "От партнёра — «страховка сработала / нет»",
+        "avoid": "Долгой изолированной отработки группировки без перехода к реальному падению"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо-конструктивный: 1) группировка лёжа на спине — поджать ноги к груди, захватить голени руками 2) перекаты вперёд-назад в этой группировке, не отпуская ног 3) отдельно отработать хлопок руками по ковру в момент переката 4) кувырок вперёд с места как целостное применение навыка",
+        "exercises": "Отдельно: группировка на месте; перекаты без хлопка; хлопок руками отдельно на месте, лёжа; затем сборка в кувырок",
+        "form": "Индивидуальная, на своём мате в своём темпе",
+        "feedback": "Чёткий критерий: удар ладонью раньше касания туловища ковром — есть/нет",
+        "avoid": "Перехода к кувырку до автоматизма группировки и хлопка по отдельности"
+      },
+      "смешанный": {
+        "method": "Целостный кувырок для знакомства → разбор по этапам (группировка → перекат → хлопок) → снова целостный кувырок на зачёт",
+        "exercises": "Пара упражнений на технику индивидуально + парные перекаты",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Стойки и передвижения": {
+      "полезависимый": {
+        "method": "Целостно — сразу парное маневрирование в игровой форме («зайди за спину партнёру»)",
+        "exercises": "Игра «зайди за спину» в парах; групповое маневрирование по кругу",
+        "form": "Парная, игровая",
+        "feedback": "От партнёра — «зашёл за спину или нет»",
+        "avoid": "Пропуска этапа изолированной стойки — сразу «в бой»"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) стойка отдельно, без партнёра, перед зеркалом или самостоятельно 2) передвижения приставными шагами отдельно, по разметке 3) сближение с партнёром на контролируемой, заранее оговорённой дистанции",
+        "exercises": "Ходьба приставными шагами по линии разметки; удержание стойки на счёт; сближение с партнёром по команде",
+        "form": "Индивидуальная / у разметки",
+        "feedback": "Соответствие стойки и шага разметке/счёту",
+        "avoid": "Долгой отработки стойки без парного контекста"
+      },
+      "смешанный": {
+        "method": "Показ стойки и передвижения целиком в паре → отработка по элементам → снова парное маневрирование",
+        "exercises": "Комбинация разметки для шагов + игровое маневрирование",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Захваты": {
+      "полезависимый": {
+        "method": "Целостно — сразу игра «захвати первым» в парах",
+        "exercises": "Игра на опережение захвата в парах; смена партнёров каждые 2–3 минуты",
+        "form": "Парная, соревновательная (кто первый)",
+        "feedback": "Кто первый захватил — очевидный результат для обоих",
+        "avoid": "Захвата на «неправильно поставленных» руках ради скорости игры"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) изучение самого захвата на неподвижном, не сопротивляющемся партнёре 2) отработка ухода/контрприёма отдельно, без начального захвата 3) сборка в связку «захват → уход»",
+        "exercises": "Захват на статичном партнёре с фиксацией правильного положения рук; уход отдельно, без захвата, на счёт",
+        "form": "Парная, но методичная — партнёр не сопротивляется на этапе разучивания",
+        "feedback": "Правильность положения рук/корпуса, отдельно от скорости",
+        "avoid": "Затягивания статичной отработки без перехода к игровому контексту"
+      },
+      "смешанный": {
+        "method": "Показ связки целиком → отработка захвата и ухода по отдельности → снова связка целиком",
+        "exercises": "Один подход на технику индивидуально + игровые повторы",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Переводы в партер": {
+      "полезависимый": {
+        "method": "Целостный показ перевода сразу в связке «перевод → удержание» на игровом партнёре",
+        "exercises": "Перевод сразу с переходом в удержание, в парах, с элементом «кто удержит дольше»",
+        "form": "Парная, с игровым элементом удержания",
+        "feedback": "Удержал/не удержал — понятно обоим сразу",
+        "avoid": "Введения сопротивления партнёра раньше, чем закреплена базовая техника"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) перевод медленно с не сопротивляющимся партнёром, только техника 2) постепенное добавление лёгкого сопротивления партнёра 3) контрприём от перевода — отдельно, без самого перевода",
+        "exercises": "Медленный перевод на счёт с фиксацией каждой фазы; контрприём отдельно от исходного положения партера",
+        "form": "Парная, но методичная, со ступенчатым усложнением сопротивления",
+        "feedback": "Чистота техники перевода отдельно от результата схватки",
+        "avoid": "Отработки перевода без партнёра вообще (теряется чувство контакта)"
+      },
+      "смешанный": {
+        "method": "Показ целостной связки → отработка перевода отдельно на медленной скорости → полная связка с сопротивлением",
+        "exercises": "Один медленный повтор на технику + игровые повторы с удержанием",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Бросок через бедро (первый и базовый бросок в программе)": {
+      "полезависимый": {
+        "method": "Целостный показ броска сразу как единого движения «подход → бросок → фиксация» на статичном партнёре",
+        "exercises": "Парные повторы броска на статичном, доверяющем партнёре, со сменой ролей «бросающий/падающий»",
+        "form": "Парная с самого начала",
+        "feedback": "Партнёр сообщает, комфортно ли было падение",
+        "avoid": "Отработки на скорость до того, как партнёр уверенно владеет самостраховкой (пункт 1)"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо-конструктивный: 1) подворот без броска — отработка постановки ног и разворота бёдер на месте, без партнёра 2) бросок медленно, партнёр не сопротивляется, с обязательной страховкой падения 3) постепенное увеличение скорости при сохранении самостраховки партнёра",
+        "exercises": "Подворот на месте без партнёра (много повторов); бросок на самом медленном темпе с обязательным контролем самостраховки партнёра при каждом повторе",
+        "form": "Индивидуальная отработка подворота → затем парная",
+        "feedback": "Угол разворота бёдер, положение ног — конкретные технические критерии",
+        "avoid": "Слишком долгой отработки подворота «в воздухе» без реального броска партнёра"
+      },
+      "смешанный": {
+        "method": "Целостный показ броска → отдельная отработка подворота без партнёра → медленный бросок → бросок в обычном темпе",
+        "exercises": "Несколько повторов подворота индивидуально + парная отработка целостного броска",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Волейбол": {
+    "Нижний приём мяча": {
+      "полезависимый": {
+        "method": "Целостно: сразу приём мяча, наброшенного партнёром, с игровой установкой «не дать мячу упасть»",
+        "exercises": "Игра «не урони» в парах на серию приёмов подряд",
+        "form": "Парная, игровая",
+        "feedback": "Общий счёт серии в паре",
+        "avoid": "Отработки положения рук в отрыве от реального мяча"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация положения рук (соединить кисти, «замок») без мяча 2) приём мяча, наброшенного строго в руки, стоя на месте 3) приём с небольшим перемещением 4) приём в игровой связке",
+        "exercises": "Имитация «замка» руками перед зеркалом; приём мяча точно в руки от партнёра-набрасывающего",
+        "form": "Индивидуальная отработка рук → парная с точной наводкой",
+        "feedback": "Положение рук/локтей — конкретный технический критерий",
+        "avoid": "Игровой серии до автоматизма самого приёма"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка положения рук отдельно → игровой приём",
+        "exercises": "Комбинация точной наводки + игровой серии",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Верхний приём мяча": {
+      "полезависимый": {
+        "method": "Целостно: приём от наброшенного мяча сразу в игровой форме",
+        "exercises": "Серии приёма в парах на счёт подряд, с элементом соревнования пар",
+        "form": "Парная",
+        "feedback": "Длина серии в паре",
+        "avoid": "Пропуска этапа фиксации кистей"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) обхватить мяч руками, зафиксировать положение кистей 2) поднять мяч с пола, сохраняя положение кистей 3) передача в пол на месте 4) приём от партнёра",
+        "exercises": "Обхват мяча и удержание положения кистей; передача в пол без партнёра, только техника",
+        "form": "Индивидуальная с мячом у стены/в пол",
+        "feedback": "Положение пальцев/кистей — по критериям",
+        "avoid": "Долгой отработки в пол без перехода к партнёру"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка кистей на мяче отдельно → игровой приём",
+        "exercises": "Комбинация: 1 подход на кисти + серия с партнёром",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Нижняя передача": {
+      "полезависимый": {
+        "method": "Целостно, сразу в парах с элементом игры",
+        "exercises": "Парная передача на серию без потерь",
+        "form": "Парная",
+        "feedback": "Длина серии",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо (та же логика, что нижний приём, но с акцентом на направленность мяча партнёру): 1) стойка и постановка рук 2) передача в пол на месте 3) передача партнёру с точной наводки 4) передача с перемещением",
+        "exercises": "Передача в пол на месте; передача точно в руки партнёру, стоящему близко",
+        "form": "Индивидуальная/у стены → парная",
+        "feedback": "Направленность и точность передачи, в цифрах (сколько точных из 10)",
+        "avoid": "Долгой отработки без партнёра"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка стойки/рук → игровая передача",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Верхняя передача": {
+      "полезависимый": {
+        "method": "Целостно — сразу передача над собой и партнёру в игре",
+        "exercises": "Серии передач в парах «сколько продержим»; передача через сетку в игре",
+        "form": "Парная",
+        "feedback": "Длина серии в паре",
+        "avoid": "Долгой отработки в одиночку у стены"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо (по методичкам): 1) низкий дриблинг мяча в пол двумя руками на месте 2) верхняя передача в пол без зрительного контроля 3) передача в пол с перемещением (лицом/спиной/боком) 4) передача в стену на минимальном расстоянии 5) передача партнёру",
+        "exercises": "Дриблинг в пол на месте; передача в стену с фиксированного расстояния; передача без зрительного контроля (на ощущение кистей)",
+        "form": "Индивидуальная (у стены/в пол)",
+        "feedback": "Точность передачи в стену, число попаданий",
+        "avoid": "Перехода к игре без отработки дриблинга и передачи в пол"
+      },
+      "смешанный": {
+        "method": "Показ целиком → дриблинг и передача в пол отдельно → передача с партнёром",
+        "exercises": "Комбинация индивидуальных подходов + парная серия",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Подача (нижняя и верхняя)": {
+      "полезависимый": {
+        "method": "Целостно — сразу подача через сетку в игровом формате «на точность в зону соперника»",
+        "exercises": "Соревнование «кто больше подач в зону» в парах/группах",
+        "form": "Групповая/парная, соревновательная",
+        "feedback": "Место в соревновании на точность",
+        "avoid": "Долгой отработки подбрасывания в одиночку без ударов"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) положение подбрасывающей руки без мяча, затем с мячом 2) положение бьющей руки для замаха, имитация замаха 3) имитация подбрасывания и удара отдельно 4) подача с места без сетки 5) подача через сетку",
+        "exercises": "Имитация замаха без мяча (много повторов); подбрасывание мяча отдельно, без удара, с оценкой стабильности траектории",
+        "form": "Индивидуальная, пошаговая",
+        "feedback": "Стабильность подбрасывания и угол замаха — конкретные критерии",
+        "avoid": "Подачи через сетку на результат до автоматизма подбрасывания"
+      },
+      "смешанный": {
+        "method": "Показ подачи целиком → отработка замаха и подбрасывания отдельно → подача через сетку на зачёт",
+        "exercises": "Комбинация: 1–2 подхода на технику + серия подач на точность",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Нападающий удар": {
+      "полезависимый": {
+        "method": "Целостно — сразу разбег-прыжок-удар как единая связка в игровой атаке",
+        "exercises": "Атака с полного разбега на счёт в игровой форме, со сменой ролей нападающий/блокирующий",
+        "form": "Парная/групповая, игровая",
+        "feedback": "Успешность атаки в игре",
+        "avoid": "Полного удара с разбега до освоения прыжков и подач (методическое условие)"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо (перед изучением должны быть освоены прыжки и верхние подачи — предварительное условие): 1) разбег отдельно, без прыжка и удара, с акцентом на стопорящий шаг на предпоследнем широком шаге 2) прыжок без удара 3) ударное движение по неподвижному мячу (например, подвешенному) 4) полная связка с наброшенным мячом",
+        "exercises": "Отработка стопорящего шага разбега отдельно; прыжок у сетки без удара на максимальную высоту; удар по мячу на резинке/подвешенному",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Высота прыжка, точность попадания по неподвижному мячу",
+        "avoid": "Долгой отработки разбега без перехода к удару"
+      },
+      "смешанный": {
+        "method": "Показ связки целиком → отработка разбега и прыжка отдельно → удар по неподвижному мячу → полная связка",
+        "exercises": "Комбинация точечной отработки фаз + игровая атака",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Пионербол": {
+    "Ловля мяча": {
+      "полезависимый": {
+        "method": "Целостно — сразу ловля мяча, наброшенного партнёром произвольно, с игровой установкой «не урони»",
+        "exercises": "Серия ловли в парах на счёт, с усложнением (бег после освоения на месте)",
+        "form": "Парная, игровая",
+        "feedback": "Длина серии без потерь в паре",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация положения рук при ловле (без мяча) 2) ловля мяча, наброшенного точно в руки, стоя на месте 3) ловля с небольшим перемещением 4) ловля в игровой ситуации",
+        "exercises": "Имитация рук без мяча; ловля от точного наброса партнёра, стоя на месте",
+        "form": "Индивидуальная → парная с точным наброса",
+        "feedback": "Положение рук в момент ловли — конкретный критерий",
+        "avoid": "Игровой серии до закрепления самой ловли"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка положения рук → игровая ловля",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Подача/бросок через сетку": {
+      "полезависимый": {
+        "method": "Целостно — сразу бросок через сетку в игровом формате на точность",
+        "exercises": "Соревнование на точность броска в командах",
+        "form": "Групповая, соревновательная",
+        "feedback": "Место в соревновании",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация замаха для броска одной рукой без мяча 2) бросок с места без сетки, на точность в мишень 3) бросок через сетку",
+        "exercises": "Имитация замаха; броски в мишень на полу/стене без сетки",
+        "form": "Индивидуальная",
+        "feedback": "Точность попадания в мишень, число из 10",
+        "avoid": "Броска через сетку до отработки замаха и точности"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка замаха отдельно → бросок через сетку на зачёт",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Передача партнёру (пас)": {
+      "полезависимый": {
+        "method": "Целостно — сразу передача в парах в свободном темпе",
+        "exercises": "Серия передач в кругу (несколько человек)",
+        "form": "Групповая (в кругу)",
+        "feedback": "Общий счёт серии в группе",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) передача на месте, стоя близко к партнёру 2) передача с увеличением дистанции 3) передача в движении",
+        "exercises": "Передача на короткой дистанции с фиксированной точностью, постепенно увеличивая расстояние",
+        "form": "Парная, методичная",
+        "feedback": "Точность на конкретной дистанции",
+        "avoid": "Увеличения дистанции до закрепления передачи на месте"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка на месте → передача в движении",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Лапта": {
+    "Удар битой по мячу": {
+      "полезависимый": {
+        "method": "Целостно — сразу удар по подброшенному партнёром мячу в игровой ситуации",
+        "exercises": "Серия ударов «кто дальше» в парах/командах",
+        "form": "Парная/групповая, соревновательная",
+        "feedback": "Дальность удара, место в серии",
+        "avoid": "Долгой имитации без реального удара по мячу"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация удара способом «сбоку» в медленном темпе, отдельно на низком, среднем и высоком уровне 2) удар по неподвижному мячу (с руки/подставки) 3) удар по мячу, подброшенному партнёром",
+        "exercises": "Имитация удара сбоку в медленном темпе на счёт, отдельно по уровням (низкий/средний/высокий)",
+        "form": "Индивидуальная, пошаговая",
+        "feedback": "Чистота имитации по уровням, отдельно от результата удара",
+        "avoid": "Удара «на результат» до закрепления имитации по всем трём уровням"
+      },
+      "смешанный": {
+        "method": "Показ удара целиком → медленная имитация по уровням → удар по подброшенному мячу",
+        "exercises": "Комбинация: 1–2 медленных повтора на технику + серия ударов на результат",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Ловля и осаливание мяча (действия в поле)": {
+      "полезависимый": {
+        "method": "Целостно — сразу игровая ситуация «поймай и осали» в паре/малой группе",
+        "exercises": "Игра «догони и осали» в малых группах",
+        "form": "Групповая, игровая",
+        "feedback": "Успех в игровой ситуации",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация положения рук при ловле одной/двумя руками (без мяча) 2) ловля мяча, точно наброшенного партнёром 3) осаливание — бросок в цель (неподвижную/движущуюся) отдельно 4) связка «поймал → осалил»",
+        "exercises": "Имитация ловли рук отдельно; точность осаливания по неподвижной цели, затем по движущейся",
+        "form": "Индивидуальная/парная, методичная",
+        "feedback": "Точность осаливания в цифрах (число попаданий из 10)",
+        "avoid": "Игры «по-настоящему» до отработки точности осаливания по неподвижной цели"
+      },
+      "смешанный": {
+        "method": "Показ игровой связки целиком → отработка ловли и осаливания по отдельности → игровая связка",
+        "exercises": "Комбинация: точечная отработка + игровая ситуация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Баскетбол": {
+    "Ведение мяча": {
+      "полезависимый": {
+        "method": "Целостно — сразу вся связка ведения с изменением направления в игровой ситуации",
+        "exercises": "Игра «сохрани мяч» — ведение с одновременной попыткой выбить мяч у других; эстафеты в командах",
+        "form": "Групповая, игровая",
+        "feedback": "Результат в игре/эстафете",
+        "avoid": "Долгой отработки на месте без игрового контекста"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) ведение на месте правой/левой отдельно, взгляд не на мяч 2) ведение шагом по прямой 3) ведение бегом 4) ведение с изменением направления/скорости 5) ведение по восьмёрке на скорость",
+        "exercises": "Ведение на месте отдельно правой/левой рукой без взгляда на мяч; ведение вокруг разметочных кругов и препятствий на скорость",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Число потерь мяча, время прохождения дистанции",
+        "avoid": "Игры «на выбивание» до автоматизма ведения без зрительного контроля"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка по фазам → ведение в игре",
+        "exercises": "Комбинация точечной отработки + игровая часть",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Передача мяча": {
+      "полезависимый": {
+        "method": "Целостно — сразу передачи в движении в игровой связке (например, быстрый прорыв втроём)",
+        "exercises": "Игровые тройки «отдай и открылся»; эстафеты на точность передачи в команде",
+        "form": "Групповая, игровая",
+        "feedback": "Успешность командной связки",
+        "avoid": "Долгой парной отработки без игрового контекста"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) передача на месте в парах с фиксированного расстояния 2) передача с увеличением дистанции 3) ловля с выходом навстречу мячу (важно: не ждать мяч стоя) 4) передача в движении/в тройках",
+        "exercises": "Передача на месте с фиксированной дистанцией, точность в цель/обруч; ловля с выходом навстречу — отдельное упражнение",
+        "form": "Парная/индивидуальная, методичная",
+        "feedback": "Точность передачи в цифрах (сколько точных из 10)",
+        "avoid": "Игры в тройках до закрепления навыка выхода навстречу мячу"
+      },
+      "смешанный": {
+        "method": "Показ игровой связки целиком → отработка передачи на месте → передача в движении",
+        "exercises": "Комбинация точечной отработки + игровые связки",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Бросок": {
+      "полезависимый": {
+        "method": "Целостно — сразу бросок в игровой ситуации (атака с пассивным защитником)",
+        "exercises": "Соревнование на точность бросков в парах/командах; игра «11 очков»",
+        "form": "Групповая/парная, соревновательная",
+        "feedback": "Место в соревновании",
+        "avoid": "Долгой отработки с одной точки без игровой ситуации"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо (важно предварительно освоить передачу и бросок с места): 1) имитация броскового движения без мяча 2) бросок с места с близкой дистанции 3) ловля мяча во время шага, стопорящий шаг, отталкивание — отдельно от броска 4) бросок в движении/в прыжке с полной связкой",
+        "exercises": "Броски с фиксированных точек (5 позиций) с подсчётом процента попаданий; отдельная отработка стопорящего шага без броска",
+        "form": "Индивидуальная, с личным протоколом процента попаданий",
+        "feedback": "Процент попаданий с конкретных точек, личная динамика",
+        "avoid": "Броска в движении до закрепления броска с места и стопорящего шага"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка стопорящего шага и броска с места отдельно → бросок в движении на зачёт",
+        "exercises": "Комбинация: отработка с одной точки индивидуально + игровые броски",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Футбол": {
+    "Приём мяча (остановка)": {
+      "полезависимый": {
+        "method": "Целостно — приём мяча сразу с последующим действием (передачей/ударом) в игровой связке",
+        "exercises": "В парах: приём с последующей передачей партнёру, счёт серии без потерь",
+        "form": "Парная, игровая",
+        "feedback": "Длина серии в паре",
+        "avoid": "Долгой изолированной отработки без немедленного игрового действия после приёма"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) приём неподвижного мяча (положение стопы) 2) приём катящегося мяча внутренней стороной стопы 3) приём мяча, летящего по воздуху, с гашением траектории 4) приём с последующим уводом мяча от соперника (прикрытие корпусом)",
+        "exercises": "Приём неподвижного мяча на технику; приём катящегося мяча с фиксированного паса, отдельно от последующих действий",
+        "form": "Индивидуальная/парная, методичная",
+        "feedback": "Чистота остановки мяча (мяч не отскакивает далеко) — конкретный критерий",
+        "avoid": "Игровой серии до закрепления приёма разных типов подачи по отдельности"
+      },
+      "смешанный": {
+        "method": "Показ связки «приём → действие» целиком → отработка приёма отдельно по видам подачи → полная связка в игре",
+        "exercises": "Комбинация точечной отработки + парная игровая серия",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Ведение мяча": {
+      "полезависимый": {
+        "method": "Целостно — ведение сразу в игровой ситуации (обыгрыш соперника 1 в 1)",
+        "exercises": "Игра «сохрани мяч» в квадрате с несколькими игроками; обыгрыш 1 в 1",
+        "form": "Групповая, игровая",
+        "feedback": "Успешность обыгрыша в игре",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) ведение по прямой, мяч в поле зрения на периферии (не под ногами) 2) ведение с изменением направления между стойками/конусами 3) ведение с ускорением/торможением 4) ведение с обыгрышем пассивного соперника",
+        "exercises": "Ведение между стойками на скорость (слаломом); ведение с фиксацией взгляда вперёд, а не на мяч — отдельное упражнение",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Время прохождения слалома, число задетых конусов",
+        "avoid": "Обыгрыша соперника до автоматизма ведения без взгляда на мяч"
+      },
+      "смешанный": {
+        "method": "Показ целиком в игре → отработка по фазам (стойки/конусы) → обыгрыш соперника",
+        "exercises": "Комбинация слалома индивидуально + игровые обыгрыши",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Передача мяча": {
+      "полезависимый": {
+        "method": "Целостно — передачи сразу в игровых комбинациях (пас на ход партнёру, рывок)",
+        "exercises": "Игровые комбинации в тройках («передал и открылся»); контроль мяча в парах с усложнением (добавление соперника)",
+        "form": "Групповая, игровая",
+        "feedback": "Успешность комбинации",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) передача неподвижного мяча партнёру на короткое расстояние, точность 2) увеличение дистанции передачи 3) передача в движении/на ход партнёру 4) передача под давлением условного соперника",
+        "exercises": "Точность передачи в цель/ворота на фиксированной дистанции; передача с увеличением расстояния по шагам",
+        "form": "Парная/индивидуальная, методичная",
+        "feedback": "Точность передачи в цифрах",
+        "avoid": "Игры с давлением соперника до закрепления точности на свободном месте"
+      },
+      "смешанный": {
+        "method": "Показ игровой комбинации целиком → отработка точности передачи на месте → передача в движении",
+        "exercises": "Комбинация точечной точности + игровые комбинации",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Удар по мячу": {
+      "полезависимый": {
+        "method": "Целостно — сразу удар по воротам в игровой ситуации после подхода/паса",
+        "exercises": "Соревнование на точность ударов по воротам в парах/командах",
+        "form": "Групповая/парная, соревновательная",
+        "feedback": "Место в соревновании",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) разбег небольшими шагами по прямой, ускоряясь к мячу, с расчётом на нужную ногу 2) удар по неподвижному мячу с места 3) удар после короткого разбега 4) удар в одно касание после паса",
+        "exercises": "Удары по неподвижному мячу с фиксированного расстояния с подсчётом процента попаданий в цель; отдельная отработка разбега без удара",
+        "form": "Индивидуальная, с протоколом точности",
+        "feedback": "Процент попаданий, личная динамика",
+        "avoid": "Удара «с листа» в игре до закрепления удара по неподвижному мячу"
+      },
+      "смешанный": {
+        "method": "Показ удара целиком в игровой ситуации → отработка разбега и удара по неподвижному мячу → удар после паса",
+        "exercises": "Комбинация индивидуальной точности + игровые удары",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Действия вратаря": {
+      "полезависимый": {
+        "method": "Целостно — сразу отражение ударов в игровой тренировке ворот с разных углов",
+        "exercises": "Серия ударов от разных игроков команды с игровой обратной связью «отразил/пропустил»",
+        "form": "Групповая, игровая",
+        "feedback": "Число отражённых ударов в серии",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) основная стойка вратаря отдельно (без мяча) 2) перемещения в стойке приставным шагом 3) ловля/отбивание мяча, направленного точно в руки 4) прыжки в сторону при ударах низом/верхом — отдельно от игровой ситуации",
+        "exercises": "Отработка стойки и перемещений без мяча; ловля мяча, брошенного точно в руки, с фиксированной позиции",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Чистота техники прыжка/стойки — отдельно от результата",
+        "avoid": "Игровой тренировки ворот до закрепления стойки и перемещений"
+      },
+      "смешанный": {
+        "method": "Показ стойки и приёма целиком → отработка перемещений и прыжков отдельно → игровая тренировка ворот",
+        "exercises": "Комбинация: отработка техники индивидуально + игровая тренировка ворот",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Плавание": {
+    "Кроль на груди": {
+      "полезависимый": {
+        "method": "Целостно — после знакомства с водой сразу пробуют плыть целиком короткий отрезок, ошибки разбираются по ходу",
+        "exercises": "Групповые заплывы на короткие отрезки с сравнением «кто доплыл красивее»; парная работа — партнёр наблюдает и подсказывает",
+        "form": "Групповая, с наблюдением и обратной связью от партнёра/группы",
+        "feedback": "Общее впечатление от заплыва, сравнение с другими",
+        "avoid": "Долгой изолированной отработки элементов без попытки плыть целиком"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо-конструктивный, строго по этапам: 1) имитация движений ног на суше 2) движения ног в воде у бортика 3) скольжение с работой ног 4) имитация рук на суше 5) движения рук в воде 6) согласование ног+рук+дыхания",
+        "exercises": "Работа ног у бортика, держась руками, отдельно от рук; движения рук на суше перед зеркалом; скольжение без гребков на отработку положения тела",
+        "form": "Индивидуальная, у бортика, в своём темпе",
+        "feedback": "Конкретный элемент техники (например, только работа ног), отдельно от результата",
+        "avoid": "Заплывов «на результат» до закрепления работы ног и рук по отдельности"
+      },
+      "смешанный": {
+        "method": "Целостная попытка проплыть → разбор по элементам (ноги отдельно, руки отдельно) → снова целостное плавание",
+        "exercises": "Комбинация: короткий заплыв целиком → 1-2 элемента отдельно → снова заплыв",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Кроль на спине": {
+      "полезависимый": {
+        "method": "Целостно — сразу скольжение и плавание на спине коротким отрезком после знакомства с положением тела",
+        "exercises": "Групповое скольжение на спине «кто дольше проскользит»; парная поддержка головы партнёра на первых попытках",
+        "form": "Групповая/парная",
+        "feedback": "Общее впечатление, поддержка партнёра",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) лежание и скольжение на спине с поддержкой у бортика 2) работа ног на спине, держась за бортик 3) работа рук на спине отдельно 4) согласование ног+рук+дыхания",
+        "exercises": "Работа ног на спине у бортика без рук; отработка положения головы и тела отдельно, с фиксацией на секунды",
+        "form": "Индивидуальная, у бортика",
+        "feedback": "Положение тела (горизонталь), конкретный технический критерий",
+        "avoid": "Полного заплыва до закрепления положения тела на спине"
+      },
+      "смешанный": {
+        "method": "Целостная попытка → разбор положения тела и работы ног/рук отдельно → снова целостно",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Брасс": {
+      "полезависимый": {
+        "method": "Целостно — после знакомства сразу пробуют проплыть отрезок брассом целиком",
+        "exercises": "Групповой заплыв коротких отрезков с сравнением техники; парное наблюдение",
+        "form": "Групповая",
+        "feedback": "Общее впечатление от заплыва",
+        "avoid": "Форсирования полного согласования до отработки ног отдельно (в брассе это особенно критично)"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо, строго по этапам методики: 1) имитационные упражнения ног на суше 2) движения ног в воде у бортика 3) плавательные упражнения ногами 4) имитация рук на суше 5) движения рук в воде 6) сочетание рук с дыханием 7) полное согласование ног+рук+дыхания",
+        "exercises": "Сидя на бортике/доске — имитация движений ног брассом отдельно; отдельно имитация рук сидя, с прямой спиной",
+        "form": "Индивидуальная, поэтапная (больше этапов, чем в кроле — требует терпения)",
+        "feedback": "Отдельно по ногам и по рукам — два разных протокола",
+        "avoid": "—"
+      },
+      "смешанный": {
+        "method": "Целостная попытка → отработка ног и рук по отдельности (самый длинный список этапов из всех стилей — брасс технически сложнее) → снова целостно",
+        "exercises": "Комбинация: индивидуальная отработка ног (самого сложного элемента) + групповые заплывы",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Старт (прыжок с тумбы)": {
+      "полезависимый": {
+        "method": "Целостно — после освоения учебных прыжков сразу пробуют полный старт с тумбы",
+        "exercises": "Парные/групповые старты «кто дальше проскользит»; соревнование на технику входа в воду",
+        "form": "Групповая, соревновательная",
+        "feedback": "Дальность скольжения, сравнение с другими",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) исходное положение на тумбе (захват тумбы руками и ногой) 2) имитация толчка на суше 3) прыжок с бортика (не с тумбы) с отработкой обтекаемого положения «стрелочкой» 4) полный старт с тумбы с скольжением под водой",
+        "exercises": "Отработка исходного положения на тумбе без прыжка; отдельная отработка позы «стрелочка» с прыжком с бортика (не с тумбы)",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Чистота позы «стрелочка», отдельно от дальности",
+        "avoid": "Полного старта с тумбы до освоения учебных прыжков в воду (обязательное методическое условие)"
+      },
+      "смешанный": {
+        "method": "Показ полного старта → отработка исходного положения и «стрелочки» отдельно → полный старт на зачёт",
+        "exercises": "Комбинация: отработка позы индивидуально + групповые старты",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Лыжная подготовка": {
+    "Попеременный двухшажный ход (виды передвижения)": {
+      "полезависимый": {
+        "method": "Целостно — по методике «первого представления»: кратко объяснить и сразу пройти 2-3 круга этим ходом, ошибки разбираются потом",
+        "exercises": "Групповое прохождение дистанции «за преподавателем», ориентир на лидера",
+        "form": "Групповая, следом за преподавателем/лидером",
+        "feedback": "Общее ощущение «получается / не получается» от группы",
+        "avoid": "Долгого разбора элементов до попытки пройти круг целиком"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) положение посадки на месте (без движения) 2) скользящий шаг отдельно 3) работа рук без палок (имитация выноса и постановки палки) 4) работа рук с палками, держа их за середину 5) полная координация на лыжне",
+        "exercises": "Отработка посадки на месте; имитация выноса руки без палок отдельно от ног",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Конкретный элемент (например, только вынос палки) — отдельно",
+        "avoid": "Прохождения полной дистанции до отработки посадки и работы рук по отдельности"
+      },
+      "смешанный": {
+        "method": "Целостное прохождение круга для знакомства → разбор работы рук и ног по отдельности → снова целостное прохождение",
+        "exercises": "Комбинация: групповое прохождение + индивидуальная отработка слабого элемента",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Одновременные ходы (бесшажный, одношажный)": {
+      "полезависимый": {
+        "method": "Целостно — сразу проход отрезка одновременным ходом с общим ориентиром",
+        "exercises": "Групповое прохождение отрезка «в ногу»; соревнование пар на скорость",
+        "form": "Групповая",
+        "feedback": "Скорость группы/пары",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация одновременного отталкивания руками на месте (без лыж) 2) отталкивание руками на лыжах без хода ногами 3) добавление шага (для одношажного) 4) полная координация на дистанции",
+        "exercises": "Имитация отталкивания руками на месте; отработка одного шага с отталкиванием отдельно от полного цикла",
+        "form": "Индивидуальная",
+        "feedback": "Сила и чистота отталкивания — отдельный критерий",
+        "avoid": "Прохождения дистанции до закрепления отталкивания руками отдельно"
+      },
+      "смешанный": {
+        "method": "Показ целиком → отработка отталкивания руками отдельно → полный ход на дистанции",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Торможение и повороты (плугом, упором)": {
+      "полезависимый": {
+        "method": "Целостно — сразу торможение плугом на пологом спуске в игровой форме («остановись у флажка»)",
+        "exercises": "Игра «остановись у флажка/линии» в группе, соревновательно",
+        "form": "Групповая, игровая",
+        "feedback": "Успех в игре (остановился у флажка или нет)",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация положения «плуг» на месте (разведение пяток, кантование лыж) без движения 2) торможение плугом на минимальной скорости 3) торможение на увеличивающейся скорости 4) повороты упором",
+        "exercises": "Отработка положения «плуг» на ровном месте без скольжения; постепенное увеличение скорости спуска с фиксацией результата",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Точность положения лыж в «плуге», отдельно от результата торможения",
+        "avoid": "Спуска на скорости до закрепления положения «плуг» на месте"
+      },
+      "смешанный": {
+        "method": "Показ на спуске целиком → отработка положения «плуг» на месте отдельно → торможение на скорости",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Подъёмы и спуски": {
+      "полезависимый": {
+        "method": "Целостно — сразу подъём/спуск в связке, ориентируясь на группу впереди",
+        "exercises": "Групповой подъём и спуск «цепочкой» за преподавателем",
+        "form": "Групповая",
+        "feedback": "Общий результат группы",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) подъём «лесенкой» отдельно на пологом склоне 2) подъём скользящим шагом отдельно 3) базовая стойка спуска на месте (без движения) 4) спуск с постепенным увеличением крутизны",
+        "exercises": "Отработка стойки спуска на пологом месте без реального спуска; подъём «лесенкой» отдельно, на технику постановки лыж",
+        "form": "Индивидуальная, поэтапная, с постепенным увеличением сложности склона",
+        "feedback": "Устойчивость в стойке при спуске — конкретный критерий",
+        "avoid": "Спуска с крутого склона до закрепления базовой стойки на пологом"
+      },
+      "смешанный": {
+        "method": "Показ подъёма и спуска целиком → отработка стойки и подъёма «лесенкой» отдельно → полный спуск",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Гимнастика": {
+    "Кувырки (вперёд и назад)": {
+      "полезависимый": {
+        "method": "Целостно — сразу полный кувырок с подстраховкой преподавателя/партнёра",
+        "exercises": "Парные кувырки с наблюдением партнёра; серия кувырков подряд в шеренге",
+        "form": "Групповая/парная, поточная шеренгой",
+        "feedback": "От партнёра/группы — «получилось красиво»",
+        "avoid": "Долгой отработки переката без перехода к целостному кувырку"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо-конструктивный (кувырок вперёд делится на составные движения): 1) упор присев 2) перекат вперёд 3) группировка 4) упор присев 5) основная стойка — каждый элемент изучается отдельно как подводящее упражнение",
+        "exercises": "Перекаты вперёд-назад в группировке отдельно, без перехода в кувырок; отдельная отработка группировки сидя",
+        "form": "Индивидуальная, на своём мате, в своём темпе",
+        "feedback": "Чёткий критерий по каждому составному элементу отдельно",
+        "avoid": "Кувырка целиком до закрепления группировки и переката по отдельности"
+      },
+      "смешанный": {
+        "method": "Целостный кувырок для знакомства → разбор по 5 составным движениям → снова целостный кувырок на зачёт",
+        "exercises": "Комбинация: 1-2 подводящих упражнения + серия целостных кувырков",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Стойка на лопатках": {
+      "полезависимый": {
+        "method": "Целостно — сразу полная стойка с поддержкой партнёра/преподавателя",
+        "exercises": "Парная страховка при вставании в стойку; групповая шеренга с одновременным заходом в стойку",
+        "form": "Парная (страховка)",
+        "feedback": "От партнёра — устойчиво ли стоял",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) перекат назад из упора присев с опорой руками на уровне головы 2) выпрямление рук из упора присев на руках и голове (подводящее) 3) стойка с поддержкой поясницы руками 4) удержание стойки без поддержки",
+        "exercises": "Отработка переката назад отдельно, без стойки; удержание положения «упор на лопатках» на счёт",
+        "form": "Индивидуальная, у стены для опоры",
+        "feedback": "Время удержания стойки в секундах",
+        "avoid": "Стойки без опоры до закрепления переката и опоры руками поясницы"
+      },
+      "смешанный": {
+        "method": "Показ целиком со страховкой → отработка переката и опоры отдельно → удержание стойки самостоятельно",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Мостик": {
+      "полезависимый": {
+        "method": "Целостно — сразу мостик из положения лёжа с поддержкой партнёра",
+        "exercises": "Парная поддержка под спину при вставании в мостик",
+        "form": "Парная (поддержка обязательна на этапе освоения)",
+        "feedback": "От партнёра/преподавателя — комфортно ли, устойчиво ли",
+        "avoid": "Мостика без страховки на этапе освоения (травмоопасно для любого стиля)"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) наклон назад стоя у стены, руки скользят по стене вниз (подводящее) 2) мостик из положения лёжа на спине (проще) 3) мостик из положения стоя с поддержкой 4) мостик самостоятельно",
+        "exercises": "Наклоны назад у стены отдельно, без перехода в полный мостик, на технику прогиба",
+        "form": "Индивидуальная, у стены",
+        "feedback": "Глубина прогиба, отдельно от результата (мостик встал/не встал)",
+        "avoid": "—"
+      },
+      "смешанный": {
+        "method": "Показ целиком с поддержкой → отработка наклона у стены отдельно → мостик самостоятельно",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Равновесие на бревне (низком)": {
+      "полезависимый": {
+        "method": "Целостно — сразу ходьба по бревну с элементами (повороты, шаги) в связке",
+        "exercises": "Парное сопровождение (идут вдоль бревна рядом, страхуя); групповая очередь с элементом соревнования на чистоту прохода",
+        "form": "Парная (страховка), поточная",
+        "feedback": "От партнёра-страхующего",
+        "avoid": "Работы на бревне без страховки на этапе освоения"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) упражнения в равновесии на полу (по разметке) 2) те же упражнения на гимнастической скамейке 3) переход на низкое бревно 4) усложнение — повороты, приседания на бревне",
+        "exercises": "Отработка на полу по линии разметки — тот же элемент, что будет на бревне; постепенный переход скамейка → бревно",
+        "form": "Индивидуальная, с постепенным повышением опоры (пол → скамейка → бревно)",
+        "feedback": "Устойчивость на каждом уровне опоры — критерий перед переходом на следующий",
+        "avoid": "Перехода на бревно до уверенного выполнения на полу и скамейке"
+      },
+      "смешанный": {
+        "method": "Показ ходьбы по бревну целиком (с подстраховкой) → отработка элементов на полу/скамейке отдельно → полная связка на бревне",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Скакалка (короткая)": {
+      "полезависимый": {
+        "method": "Целостно — сразу базовый прыжок (двумя ногами) в группе под общий счёт/музыку",
+        "exercises": "Групповые прыжки под общий счёт/музыку, кто дольше без ошибки",
+        "form": "Групповая, под общий ритм",
+        "feedback": "Общий ритм группы",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) вращение скакалки без прыжка (только руки) 2) прыжки без скакалки, имитация ритма 3) базовый прыжок двумя ногами 4) усложнение — поочерёдные прыжки на одной ноге",
+        "exercises": "Вращение скакалки руками без прыжка отдельно; прыжки на месте без скакалки для ритма, затем со скакалкой",
+        "form": "Индивидуальная, в своём темпе",
+        "feedback": "Число прыжков без ошибки, личный рекорд",
+        "avoid": "Перехода к поочерёдным прыжкам до закрепления базового двумя ногами"
+      },
+      "смешанный": {
+        "method": "Показ базового прыжка в группе → отработка вращения и ритма отдельно → серия прыжков",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Длинная скакалка": {
+      "полезависимый": {
+        "method": "Целостно — сразу пробуют забежать и прыгнуть под вращающуюся скакалку в группе",
+        "exercises": "Групповая игра «кто дольше продержится», по очереди забегают",
+        "form": "Групповая, по очереди в общем ритме",
+        "feedback": "Общий счёт группы (сколько всего прыжков подряд)",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) наблюдение за вращением скакалки, определение момента для забегания (без прыжка) 2) забегание и выбегание без прыжков 3) один прыжок и сразу выбегание 4) серия прыжков подряд",
+        "exercises": "Отдельная отработка момента входа под скакалку без прыжка, на счёт «раз-два-забегаю»",
+        "form": "Индивидуальная отработка входа → затем групповая",
+        "feedback": "Личный результат — с какой попытки удался вход",
+        "avoid": "Групповой игры до отработки момента входа под скакалку индивидуально"
+      },
+      "смешанный": {
+        "method": "Показ целиком в группе → отработка момента забегания отдельно, без прыжка → серия прыжков",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Полушпагат": {
+      "полезависимый": {
+        "method": "Целостно — сразу пробуют сесть в полушпагат с поддержкой партнёра, ориентируясь на его подсказки",
+        "exercises": "Парная растяжка — партнёр придерживает для равновесия, даёт обратную связь по ощущениям",
+        "form": "Парная",
+        "feedback": "От партнёра — комфортно ли, нет ли боли",
+        "avoid": "Форсирования амплитуды через боль (для любого стиля — общее правило безопасности)"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) растяжка на месте (наклоны, выпады) без выхода в полушпагат 2) выпад с опорой на руки, постепенное скольжение задней ноги 3) удержание положения на минимальной амплитуде 4) увеличение амплитуды по мере гибкости",
+        "exercises": "Растяжка и выпады индивидуально, с фиксацией амплитуды в сантиметрах/секундах на каждом занятии",
+        "form": "Индивидуальная, с личным протоколом прогресса амплитуды",
+        "feedback": "Амплитуда в конкретных цифрах, сравнение с предыдущим занятием",
+        "avoid": "—"
+      },
+      "смешанный": {
+        "method": "Показ целиком с поддержкой → отработка выпада и растяжки отдельно → полушпагат самостоятельно",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Флорбол": {
+    "Ведение мяча (клюшкой)": {
+      "полезависимый": {
+        "method": "Целостно — сразу ведение с последующим броском по воротам в игровой связке",
+        "exercises": "Игра с элементами отбора мяча у соперника во время ведения; эстафеты в командах",
+        "form": "Групповая, игровая",
+        "feedback": "Результат в игре/эстафете",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) удержание мяча на крюке клюшки ниже уровня колена, отработка на месте (20 повторов) 2) ведение по прямой 3) ведение между конусами (слалом) 4) ведение с переходом в бросок",
+        "exercises": "Многократное отбивание мяча клюшкой на месте, удерживая его ниже уровня колена; слалом между конусами на технику, без учёта времени",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Число удержаний подряд без потери контроля",
+        "avoid": "Игры с отбором до закрепления удержания мяча на крюке"
+      },
+      "смешанный": {
+        "method": "Показ связки целиком → отработка удержания мяча на крюке отдельно → ведение с броском",
+        "exercises": "Комбинация: отработка удержания индивидуально + игровые эстафеты",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Приём мяча": {
+      "полезависимый": {
+        "method": "Целостно — приём сразу с переходом в ведение/пас в игровой ситуации",
+        "exercises": "Парная передача-приём на серию без потерь, с постепенным ускорением",
+        "form": "Парная, игровая",
+        "feedback": "Длина серии в паре",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) приём мяча, отскочившего от стенки, в разных направлениях 2) приём мяча, направленного клюшкой партнёра, с фиксированного расстояния 3) приём с последующим действием",
+        "exercises": "Приём мяча, отскочившего от отражающей стенки под разными углами — отдельное упражнение на технику",
+        "form": "Индивидуальная, у стенки",
+        "feedback": "Чистота приёма от разных углов отскока",
+        "avoid": "Игровой серии до закрепления приёма от стенки под разными углами"
+      },
+      "смешанный": {
+        "method": "Показ связки целиком → отработка приёма от стенки отдельно → полная связка в игре",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Удар (бросок) по воротам": {
+      "полезависимый": {
+        "method": "Целостно — сразу удар по воротам в игровой ситуации после ведения/паса",
+        "exercises": "Соревнование на точность ударов в парах/командах",
+        "form": "Групповая/парная, соревновательная",
+        "feedback": "Место в соревновании",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) имитация удара без мяча 2) удар с места по неподвижному мячу в ворота 3) удар в борт с последующим доигрыванием отскока 4) удар после ведения/паса",
+        "exercises": "Удары с фиксированного расстояния с подсчётом процента попаданий; отдельно — удар в борт с добиванием",
+        "form": "Индивидуальная, с протоколом точности",
+        "feedback": "Процент попаданий, личная динамика",
+        "avoid": "Удара «с листа» после ведения до закрепления удара с места"
+      },
+      "смешанный": {
+        "method": "Показ удара целиком в игре → отработка удара с места отдельно → удар после ведения",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Действия вратаря": {
+      "полезависимый": {
+        "method": "Целостно — сразу отражение серии бросков от разных игроков в игровой тренировке",
+        "exercises": "Серия бросков от разных игроков команды с игровой обратной связью",
+        "form": "Групповая, игровая",
+        "feedback": "Число отражённых бросков в серии",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) основная стойка вратаря без мяча 2) перемещения в воротах в стойке 3) ловля/отбивание мяча, направленного точно 4) реакция на броски с разных углов — отдельно от игровой ситуации",
+        "exercises": "Отработка стойки и перемещений без мяча; ловля мяча с фиксированной позиции броска",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Чистота стойки и перемещения — отдельно от результата",
+        "avoid": "Игровой тренировки ворот до закрепления стойки и перемещений"
+      },
+      "смешанный": {
+        "method": "Показ приёма целиком → отработка стойки и перемещений отдельно → игровая тренировка ворот",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "Гандбол": {
+    "Ведение мяча": {
+      "полезависимый": {
+        "method": "Целостно — сразу ведение в игровой связке с переходом в бросок/пас",
+        "exercises": "Игровые эстафеты с ведением в командах; игра «сохрани мяч»",
+        "form": "Групповая, игровая",
+        "feedback": "Результат в эстафете",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) ведение на месте одной рукой, взгляд не на мяч 2) ведение по прямой шагом 3) ведение бегом с изменением направления 4) ведение с переходом в атаку",
+        "exercises": "Ведение на месте отдельно, без взгляда на мяч; типичная ошибка — удары «под себя» — отдельно отрабатывать правильный посыл мяча вперёд-вниз",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Число потерь контроля, чистота ведения без взгляда на мяч",
+        "avoid": "Игры на скорость до устранения типичных ошибок (удары «под себя», постоянный взгляд на мяч)"
+      },
+      "смешанный": {
+        "method": "Показ связки целиком → отработка ведения на месте отдельно → ведение с переходом в атаку",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Приём мяча (ловля)": {
+      "полезависимый": {
+        "method": "Целостно — ловля сразу с переходом в передачу/бросок в игровой ситуации",
+        "exercises": "Парные серии ловли-передачи на счёт, с постепенным ускорением",
+        "form": "Парная, игровая",
+        "feedback": "Длина серии в паре",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) ловля неподвижного мяча (взять двумя руками) 2) ловля мяча, наброшенного партнёром с близкого расстояния 3) ловля с увеличением дистанции и скорости броска 4) ловля с переходом в дальнейшее действие",
+        "exercises": "Ловля от точного наброса партнёра на фиксированном расстоянии, отдельно от дальнейших действий",
+        "form": "Индивидуальная/парная, методичная",
+        "feedback": "Чистота ловли (мяч не выпадает), в цифрах",
+        "avoid": "Игровой серии до закрепления самой ловли"
+      },
+      "смешанный": {
+        "method": "Показ связки целиком → отработка ловли на месте отдельно → ловля с последующим действием",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Движение с мячом (учёт правила шагов)": {
+      "полезависимый": {
+        "method": "Целостно — сразу движение с мячом (бег с ловлей/передачей) в игровой ситуации, ошибки по шагам разбираются по ходу",
+        "exercises": "Игровые фрагменты с мячом, замечания по ходу игры",
+        "form": "Групповая, игровая",
+        "feedback": "Замечания по ходу игры от преподавателя/партнёров",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) счёт шагов с мячом в руках на месте (не более трёх, далее — ведение или передача) 2) бег с мячом с контролем числа шагов вслух/по счёту 3) сочетание бега, ведения и остановки по правилам 4) полное игровое движение",
+        "exercises": "Медленный бег с мячом и проговариванием счёта шагов вслух; остановки по свистку с проверкой числа сделанных шагов",
+        "form": "Индивидуальная, на счёт",
+        "feedback": "Точное число шагов — нарушил или нет, фиксируется каждый раз",
+        "avoid": "Игры на скорость до закрепления счёта шагов в медленном темпе"
+      },
+      "смешанный": {
+        "method": "Показ движения в игре целиком → отработка счёта шагов отдельно, медленно → полноценное движение в игре",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    },
+    "Действия вратаря": {
+      "полезависимый": {
+        "method": "Целостно — сразу отражение бросков от разных игроков в игровой тренировке",
+        "exercises": "Серия бросков от разных игроков с обратной связью «отразил/пропустил»; попеременная смена ролей в воротах",
+        "form": "Групповая, игровая, со сменой ролей",
+        "feedback": "Число отражённых бросков",
+        "avoid": "—"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо: 1) основная стойка вратаря без мяча 2) перемещения в воротах 3) ловля/отбивание мяча, направленного точно в руки 4) реакция на броски с разных позиций — отдельно",
+        "exercises": "Отработка стойки без мяча; ловля мяча с фиксированной позиции броска, постепенное увеличение силы броска",
+        "form": "Индивидуальная, поэтапная",
+        "feedback": "Чистота техники стойки/прыжка — отдельно от результата",
+        "avoid": "Игровой тренировки ворот до закрепления стойки и перемещений"
+      },
+      "смешанный": {
+        "method": "Показ приёма целиком → отработка стойки и перемещений отдельно → игровая тренировка ворот",
+        "exercises": "Комбинация",
+        "form": "Смешанная",
+        "feedback": "Оба",
+        "avoid": "—"
+      }
+    }
+  },
+  "ОФП и ГТО": {
+    "Построение комплекса общеразвивающих упражнений (ОРУ)": {
+      "полезависимый": {
+        "method": "Целостный показ всего комплекса подряд преподавателем перед началом («смотрим весь комплекс один раз целиком, потом делаем вместе»)",
+        "exercises": "Показ преподавателем + объяснение «зачем» это упражнение (для чего работает, что развивает)",
+        "form": "Фронтальная, все выполняют одновременно под счёт преподавателя — общий ритм задаёт вовлечённость",
+        "feedback": "Групповая — «все молодцы, кто отставал — подтянитесь по темпу группы»",
+        "avoid": "Долгой самостоятельной работы по карточкам без общего ритма — теряется вовлечённость"
+      },
+      "поленезависимый": {
+        "method": "Расчленённо-конструктивный: комплекс подаётся по одному упражнению с чёткой раскадровкой на счёт («упражнение 1: и.п. — на счёт раз-два-три-четыре»), следующее упражнение — только после освоения предыдущего",
+        "exercises": "Письменная/визуальная инструкция (карточка с раскадровкой по фазам), можно проверять себя без преподавателя",
+        "form": "Поточная/по станциям — каждый выполняет в своём темпе, с карточкой-инструкцией на станции (кто закончил раньше, переходит дальше)",
+        "feedback": "Индивидуальная — конкретное число повторов/чистота выполнения именно у этого студента",
+        "avoid": "Обучения только «по показу» без письменной опоры — сложно удержать точную последовательность счёта"
+      },
+      "смешанный": {
+        "method": "Показ комплекса целиком → разбор нового упражнения по счёту, если оно сложное → выполнение всего комплекса подряд",
+        "exercises": "Показ и объяснение целиком + карточка для самопроверки",
+        "form": "Фронтальная часть (разминка) + поточная часть (основной блок) в одном занятии",
+        "feedback": "Обе формы в разных частях занятия",
+        "avoid": "—"
+      }
+    },
+    "Подготовка к сдаче нормативов ГТО": {
+      "полезависимый": {
+        "method": "Круговая тренировка группой — все переходят по станциям одновременно по общему сигналу/свистку",
+        "exercises": "Станции в формате мини-соревнования между студентами/парами (кто больше отжиманий за подход, эстафета на станции «челночный бег»)",
+        "form": "Групповая/парная, соревновательная атмосфера",
+        "feedback": "Место в группе/паре, общий результат класса",
+        "avoid": "Полностью индивидуальной, «тихой» подготовки без соревновательного элемента — снижается мотивация",
+        "extra": "Перед стартом подготовки полезно провести пробное тестирование в игровой/соревновательной форме, чтобы задать общий ориентир по группе"
+      },
+      "поленезависимый": {
+        "method": "Круговая тренировка с индивидуальным темпом — каждый проходит станции в своём ритме, ориентируясь на личный норматив, а не на сигнал",
+        "exercises": "Станции с чёткими индивидуальными нормативами и личным протоколом (записывает свой результат на каждой станции, сравнивает с нормативом ГТО и с собой в прошлый раз)",
+        "form": "Индивидуальная, каждый со своим листом учёта результатов",
+        "feedback": "Личная динамика: «в прошлый раз было X, сейчас Y» — конкретные цифры по каждому нормативу",
+        "avoid": "Подготовки без личного протокола результатов — теряется ощущение прогресса и контроля",
+        "extra": "Перед стартом подготовки — завести личный дневник/протокол по каждому нормативу ГТО с текущими показателями"
+      },
+      "смешанный": {
+        "method": "Общий старт круга по сигналу → на части станций (сложные нормативы) — переход к индивидуальному темпу",
+        "exercises": "Соревновательные станции (бег, эстафеты) + станции с личным протоколом (пресс, гибкость)",
+        "form": "Смешанная — часть занятия группой, часть по личным протоколам",
+        "feedback": "Оба",
+        "avoid": "—",
+        "extra": "Оба варианта тестирования можно провести последовательно на первом занятии"
+      }
+    }
+  }
+};
+
+
+function buildReport(dimension, style, subject, topic) {
+  const tipsSet = TIPS_BY_DIM[dimension] || TIPS_FDFI;
+  const base = tipsSet[style] || tipsSet["смешанный"];
+  const subjTips = dimension === 'fdfi' ? ((SUBJECT_TIPS[subject] && SUBJECT_TIPS[subject][style]) || null) : null;
+  const heading = (dimension === 'fdfi' && topic) ? `Рекомендации для темы «${topic}» (${subject})` : `Общие рекомендации по стилю`;
+  return { heading, base, subjTips };
+}
+
+const PE_ASPECT_LABELS = { method: 'Метод', exercises: 'Упражнения', form: 'Форма организации', feedback: 'Обратная связь', avoid: 'Чего избегать', extra: 'Дополнительно' };
+const PE_ASPECT_ORDER = ['method', 'exercises', 'form', 'feedback', 'avoid', 'extra'];
+
+function buildPeCard(sport, topic, style) {
+  const d = PE_TOPIC_DATA[sport] && PE_TOPIC_DATA[sport][topic] && PE_TOPIC_DATA[sport][topic][style];
+  if (!d) return null;
+  const blocks = PE_ASPECT_ORDER.filter(k => d[k] && d[k] !== '—').map(k => ({ label: PE_ASPECT_LABELS[k], text: d[k] }));
+  return { sport, topic, blocks };
+}
+
+/* ==================== Основное приложение ==================== */
+function App() {
+  const [stage, setStage] = useState('role');
+  const [attemptId, setAttemptId] = useState(() => Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+  const hasSubmittedRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [role, setRole] = useState(null);
+  const [fio, setFio] = useState('');
+  const [group, setGroup] = useState('');
+  const [figureResults, setFigureResults] = useState(null);
+  const [fdfiResult, setFdfiResult] = useState(null);
+  const [irResult, setIrResult] = useState(null);
+  const [frcResult, setFrcResult] = useState(null);
+  const [subject, setSubject] = useState(SUBJECTS[0]);
+  const [topic, setTopic] = useState('');
+  const [peSport, setPeSport] = useState('');
+  const [peTopic, setPeTopic] = useState('');
+  const [teacherProfile, setTeacherProfile] = useState(null);
+  const [mentorStats, setMentorStats] = useState(null);
+  const [mentorLoading, setMentorLoading] = useState(false);
+  const [wsGroup, setWsGroup] = useState('');
+  const [wsMode, setWsMode] = useState('group');
+  const [wsStudent, setWsStudent] = useState('');
+  const [wsSport, setWsSport] = useState('');
+  const [wsTopic, setWsTopic] = useState('');
+  const [consent, setConsent] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const raw = await storageGet('teacher-profile', false);
+      if (raw) { try { setTeacherProfile(JSON.parse(raw)); } catch (e) {} }
+    })();
+  }, []);
+
+  function computeFdfiResult(results) {
+    const correctCount = results.filter(r => r.correct).length;
+    const avgTime = results.reduce((s, r) => s + r.timeMs, 0) / results.length;
+    const accuracy = correctCount / results.length;
+    const speedScore = Math.max(0, Math.min(1, 1 - (avgTime - MIN_REVEAL_MS) / 9000));
+    const combined = accuracy * 100 * 0.6 + speedScore * 100 * 0.4;
+    const low = combined > 40 && combined < 60;
+    let style;
+    if (combined >= 60) style = 'поленезависимый';
+    else if (combined <= 40) style = 'полезависимый';
+    else style = 'смешанный';
+    return { style, pct: Math.round(combined), low, detail: `точность ${Math.round(accuracy * 100)}%` };
+  }
+
+  function computeIrResult(results) {
+    const totalTimeMs = results.reduce((s, r) => s + r.timeMs, 0);
+    const totalErrors = results.reduce((s, r) => s + r.errors, 0);
+    const avgTime = totalTimeMs / results.length;
+    const avgErrors = totalErrors / results.length;
+    const speedScore = Math.max(0, Math.min(1, (avgTime - 1200) / 7000));
+    const errorScore = Math.max(0, Math.min(1, avgErrors / 2.5));
+    const impulsivity = (1 - speedScore) * 0.5 + errorScore * 0.5;
+    const pct = Math.round(impulsivity * 100);
+    const low = pct > 40 && pct < 60;
+    let style;
+    if (pct >= 60) style = 'импульсивный';
+    else if (pct <= 40) style = 'рефлексивный';
+    else style = 'смешанный';
+    return { style, pct, low, detail: `в среднем ${avgErrors.toFixed(1)} ошибок на карточку` };
+  }
+
+  function computeFrcResult(results) {
+    const congr = results.filter(r => r.congruent);
+    const incongr = results.filter(r => !r.congruent);
+    const avg = arr => arr.length ? arr.reduce((s, r) => s + r.timeMs, 0) / arr.length : 0;
+    const avgCongr = avg(congr) || 1;
+    const avgIncongr = avg(incongr) || avgCongr;
+    const interferenceMs = Math.max(0, avgIncongr - avgCongr);
+    const interferenceRatio = interferenceMs / avgCongr;
+    const errorsIncongr = incongr.length ? incongr.filter(r => !r.correct).length / incongr.length : 0;
+    const rigidityIndex = Math.min(1, interferenceRatio / 0.8) * 0.7 + Math.min(1, errorsIncongr) * 0.3;
+    const pct = Math.round(rigidityIndex * 100);
+    const low = pct > 35 && pct < 60;
+    let style;
+    if (pct >= 60) style = 'ригидный';
+    else if (pct <= 35) style = 'гибкий';
+    else style = 'смешанный';
+    return { style, pct, low, detail: `интерференция +${Math.round(interferenceMs)} мс` };
+  }
+
+  async function logSubmission(record) {
+    if (hasSubmittedRef.current) return true;
+    hasSubmittedRef.current = true;
+    setSubmitting(true);
+    const fullRecord = { ...record, attemptId, consent: consent ? 'да, ' + new Date().toLocaleString('ru-RU') : 'нет' };
+    const wentToServer = await serverLog(fullRecord);
+    const raw = await storageGet('submissions-log', true);
+    let arr = [];
+    if (raw) { try { arr = JSON.parse(raw); } catch (e) { arr = []; } }
+    arr.push(fullRecord);
+    if (arr.length > 500) arr = arr.slice(arr.length - 500);
+    await storageSet('submissions-log', JSON.stringify(arr), true);
+    setSubmitting(false);
+    return wentToServer;
+  }
+
+  async function finishFdfi(results) {
+    setFigureResults(results);
+    setFdfiResult(computeFdfiResult(results));
+    setStage('test-ir');
+  }
+  async function finishIr(results) {
+    setIrResult(computeIrResult(results));
+    setStage('test-frc');
+  }
+  async function finishFrc(results) {
+    const r = computeFrcResult(results);
+    setFrcResult(r);
+    if (role === 'teacher') { await finishAsTeacher(r); return; }
+    await finishAsStudent(r);
+  }
+
+  async function finishAsStudent(frcR) {
+    await logSubmission({ role: 'student', fio, group, subject: '', peSport: '', topic: '', fdfiStyle: fdfiResult.style, irStyle: irResult.style, frcStyle: frcR.style, ts: Date.now(), figureAccuracy: figureResults ? Math.round(figureResults.filter(r => r.correct).length / figureResults.length * 100) : null });
+    setStage('result');
+  }
+
+  async function finishAsTeacher(frcR) {
+    const profile = { fdfi: fdfiResult.style, ir: irResult.style, frc: frcR.style, ts: Date.now(), fio, group };
+    await storageSet('teacher-profile', JSON.stringify(profile), false);
+    setTeacherProfile(profile);
+    await logSubmission({ role: 'teacher', fio, group, subject: '', peSport: '', topic: '', fdfiStyle: fdfiResult.style, irStyle: irResult.style, frcStyle: frcR.style, ts: Date.now(), figureAccuracy: null });
+    setStage('result');
+  }
+
+  function reset() {
+    setAttemptId(Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+    hasSubmittedRef.current = false;
+    setStage('role'); setRole(null); setFio(''); setGroup(''); setConsent(false);
+    setFigureResults(null); setFdfiResult(null); setIrResult(null); setFrcResult(null);
+    setSubject(SUBJECTS[0]); setTopic(''); setPeSport(''); setPeTopic('');
+  }
+
+  async function openMentor() {
+    setStage('mentor'); setMentorLoading(true);
+    lastServerError = null;
+    let arr = await serverList();
+    let usedServer = arr !== null;
+    if (arr === null) {
+      const raw = await storageGet('submissions-log', true);
+      arr = [];
+      if (raw) { try { arr = JSON.parse(raw); } catch (e) {} }
+    }
+    const total = arr.length;
+    const byFdfi = {}, byIr = {}, byFrc = {}, bySubject = {}, byGroup = {};
+    let accSum = 0, accCount = 0;
+    arr.forEach(r => {
+      if (r.fdfiStyle) byFdfi[r.fdfiStyle] = (byFdfi[r.fdfiStyle] || 0) + 1;
+      if (r.irStyle) byIr[r.irStyle] = (byIr[r.irStyle] || 0) + 1;
+      if (r.frcStyle) byFrc[r.frcStyle] = (byFrc[r.frcStyle] || 0) + 1;
+      if (r.subject) bySubject[r.subject] = (bySubject[r.subject] || 0) + 1;
+      if (r.group) byGroup[r.group] = (byGroup[r.group] || 0) + 1;
+      if (r.figureAccuracy != null) { accSum += r.figureAccuracy; accCount++; }
+    });
+    setMentorStats({ total, byFdfi, byIr, byFrc, bySubject, byGroup, avgAccuracy: accCount ? Math.round(accSum / accCount) : null, raw: arr, usedServer });
+    setMentorLoading(false);
+  }
+
+  function downloadCsv() {
+    if (!mentorStats) return;
+    const rows = [["timestamp", "ФИО", "группа", "role", "subject", "вид_спорта", "тема", "fdfi_style", "ir_style", "frc_style", "figure_accuracy_pct", "согласие_ПДн"]];
+    mentorStats.raw.forEach(r => rows.push([new Date(r.ts).toISOString(), r.fio || "", r.group || "", r.role, r.subject || "", r.peSport || "", r.topic || "", r.fdfiStyle || "", r.irStyle || "", r.frcStyle || "", r.figureAccuracy ?? "", r.consent || ""]));
+    const csv = rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'kognitivnogid_report.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  const stepIndex = { role: 0, identity: 1, 'test-fdfi': 2, 'test-ir': 3, 'test-frc': 4, result: 5, mentor: 0 }[stage];
+
+  function ProfileGrid({ fdfi, ir, frc }) {
+    return (
+      <div className="profile-grid">
+        <div className="profile-chip"><b>{fdfi.style}</b><span>{DIMENSIONS.fdfi.label}</span><span className="profile-pct">{fdfi.pct}%</span></div>
+        <div className="profile-chip"><b>{ir.style}</b><span>{DIMENSIONS.ir.label}</span><span className="profile-pct">{ir.pct}%</span></div>
+        <div className="profile-chip"><b>{frc.style}</b><span>{DIMENSIONS.frc.label}</span><span className="profile-pct">{frc.pct}%</span></div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="hero">
+        <div className="hero-inner">
+          <div className="hero-top">
+            <div className="logo-row">
+              <div className="logo-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/><path d="M12 7v5l3 3" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg></div>
+              <h1>КогнитивноГид</h1>
+            </div>
+            {!RESEARCH_MODE && <button className="mentor-btn" onClick={openMentor}>Кабинет преподавателя</button>}
+          </div>
+          <div className="subtitle">{RESEARCH_MODE ? "Три теста подряд — профиль когнитивного стиля для исследования «КогнитоПульс». Результаты никуда не отправляются." : "Три теста подряд — единый профиль когнитивного стиля и индивидуальный маршрут рекомендаций, без интернета и внешнего ИИ."}</div>
+          {stage !== 'mentor' && (
+            <div className="progress-track">
+              {[0,1,2,3,4,5].map(i => (<div key={i} className={`progress-step ${i < stepIndex ? 'done' : i === stepIndex ? 'active' : ''}`}></div>))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {stage === 'role' && (
+        <div className="card" key="role">
+          <div className="eyebrow">Шаг 1 из 6</div>
+          <div className="card-title">Кто проходит диагностику?</div>
+          <div className="card-desc">Далее — три теста подряд (~15 минут), в конце — единый индивидуальный профиль.</div>
+          <div className="choice-grid">
+            <button className="choice-card" onClick={() => { setRole('student'); setStage('identity'); }}>
+              <div className="choice-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg></div>
+              <b>Я — студент / участник исследования</b>
+              <span>{RESEARCH_MODE ? 'Студенты и преподаватели — участники исследования «КогнитоПульс». Понадобится код участника.' : 'Прохожу три теста и узнаю, как мне легче осваивать новое. Результат увидит мой преподаватель.'}</span>
+            </button>
+            {!RESEARCH_MODE && <button className="choice-card" onClick={() => { setRole('teacher'); setStage('identity'); }}>
+              <div className="choice-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 20l6-11 4 6 3-4 3 9H4z" stroke="white" strokeWidth="2" strokeLinejoin="round"/></svg></div>
+              <b>Я — преподаватель</b>
+              <span>Прохожу тесты сам, а затем в «Кабинете преподавателя» получаю рекомендации к занятию для своей группы.</span>
+            </button>}
+          </div>
+        </div>
+      )}
+
+      {stage === 'identity' && (
+        <div className="card" key="identity">
+          <div className="eyebrow">Шаг 2 из 6</div>
+          <div className="card-title">Ваши данные</div>
+          <div className="card-desc">Нужно, чтобы результаты разных людей не путались между собой — а вы могли отследить прохождение по группе.</div>
+          <label className="field-label" htmlFor="fio-input">{COLLECT_FIO ? 'ФИО' : (role === 'teacher' ? 'Ваш код (например, инициалы)' : 'Код участника — его выдал исследователь')}</label>
+          <input id="fio-input" type="text" placeholder={COLLECT_FIO ? 'Иванов Иван Иванович' : (role === 'teacher' ? 'Например: ЭЭС' : 'Например: Э-07')} value={fio} maxLength={20} onChange={e => setFio(COLLECT_FIO ? e.target.value : normCode(e.target.value))} />
+          {role === 'student' && !COLLECT_FIO && fio && !CODE_RE.test(fio) && <div className="confidence-note" style={{marginTop: -8}}>Код выглядит так: буквы, тире и цифры — например Э-07. Проверьте свой код на листочке.</div>}
+          <label className="field-label" htmlFor="group-input">Учебная группа</label>
+          <input id="group-input" type="text" placeholder="Например: 25281м" value={group} maxLength={60} onChange={e => setGroup(e.target.value)} />
+          <details className="pd-details">
+            <summary>Согласие на обработку персональных данных — прочитать</summary>
+            <div className="pd-text">
+              <p>В соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных» я даю согласие оператору — {PD_OPERATOR} — на обработку моих персональных данных.</p>
+              <p><b>Какие данные:</b> {COLLECT_FIO ? 'фамилия, имя, отчество' : 'код участника, выданный исследователем (ФИО не собираются; сопоставление кода с фамилией есть только у исследователя)'}; учебная группа; результаты трёх тестов (стили: полезависимость/поленезависимость, импульсивность/рефлексивность, гибкость/ригидность контроля); дата и время прохождения.</p>
+              <p><b>Цель:</b> подбор методов обучения на занятиях с учётом когнитивного стиля и научное исследование в рамках проектов «КогнитивноГид» и «КогнитоПульс». В публикациях данные используются только в обобщённом виде.</p>
+              <p><b>Кто видит:</b> результат остаётся на моём устройстве и никуда не отправляется; я сам(а) показываю код результата исследователю на замере. Третьим лицам данные не передаются.</p>
+              <p><b>Действия с данными:</b> сбор, запись, хранение (на компьютере исследователя и в его облачном хранилище «Облако Mail.ru» на территории РФ), систематизация, использование, обезличивание, удаление.</p>
+              <p><b>Срок:</b> до окончания проекта, но не более 3 лет; согласие можно отозвать в любой момент, написав на {PD_CONTACT} — данные будут удалены.</p>
+            </div>
+          </details>
+          <label className="pd-check">
+            <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} />
+            <span>Я согласен(на) на обработку моих персональных данных на условиях, указанных выше.</span>
+          </label>
+          <button className="primary" disabled={!fio.trim() || !group.trim() || !consent || (role === 'student' && !COLLECT_FIO && !CODE_RE.test(fio))} onClick={() => setStage('test-fdfi')}>Начать первый тест</button>
+        </div>
+      )}
+
+      {stage === 'test-fdfi' && (
+        <div className="card" key="test-fdfi">
+          <div className="eyebrow">Шаг 3 из 6 · Тест 1 из 3 · {DIMENSIONS.fdfi.label}</div>
+          <div className="card-title" style={{textAlign:'center'}}>Поиск фигуры</div>
+          <FigureTest onDone={finishFdfi} />
+        </div>
+      )}
+
+      {stage === 'test-ir' && (
+        <div className="card" key="test-ir">
+          <div className="eyebrow">Шаг 4 из 6 · Тест 2 из 3 · {DIMENSIONS.ir.label}</div>
+          <div className="card-title" style={{textAlign:'center'}}>Сравнение похожих рисунков</div>
+          <MatchTest onDone={finishIr} />
+        </div>
+      )}
+
+      {stage === 'test-frc' && (
+        <div className="card" key="test-frc">
+          <div className="eyebrow">Шаг 5 из 6 · Тест 3 из 3 · {DIMENSIONS.frc.label}</div>
+          <div className="card-title" style={{textAlign:'center'}}>Назови цвет</div>
+          <StroopTest onDone={finishFrc} />
+        </div>
+      )}
+
+      {stage === 'result' && role === 'student' && (
+        <div className="card" key="result">
+          <div className="card-desc" style={{marginBottom: 10}}>{fio} · {group}</div>
+          <div className="tip-group-label">Ваш профиль</div>
+          <ProfileGrid fdfi={fdfiResult} ir={irResult} frc={frcResult} />
+          {RESEARCH_MODE && (
+            <div style={{background:'#FFF4E5', border:'2px solid #E08A3C', borderRadius:14, padding:'16px 18px', margin:'14px 0', textAlign:'center'}}>
+              <div style={{fontSize:13, fontWeight:700, textTransform:'uppercase', letterSpacing:0.5, color:'#8A4B12'}}>Код результата для замера</div>
+              <div style={{fontSize:30, fontWeight:800, letterSpacing:2, margin:'6px 0', fontVariantNumeric:'tabular-nums'}}>{resultCode(fio, fdfiResult.pct, irResult.pct, frcResult.pct)}</div>
+              <div style={{fontSize:14, lineHeight:1.5}}>Участник <b>{fio}</b>. <b>Сделайте скриншот этого экрана</b> и покажите его на замере КогнитоПульса.</div>
+            </div>
+          )}
+          {RESEARCH_MODE && <div className="confidence-note">Советы по организации работы с учётом вашего стиля вы получите в отчёте КогнитоПульса.</div>}
+          {!RESEARCH_MODE && ['fdfi', 'ir', 'frc'].map(dim => {
+            const st = { fdfi: fdfiResult, ir: irResult, frc: frcResult }[dim].style;
+            const tips = (STUDENT_TIPS[dim][st] || STUDENT_TIPS[dim]['смешанный']);
+            return (
+              <React.Fragment key={dim}>
+                <div className="tip-group-label">{DIMENSIONS[dim].label}: {st}</div>
+                <ul className="tip-list">{tips.map((t, i) => (<li key={dim + i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+              </React.Fragment>
+            );
+          })}
+          <div className="confidence-note" style={{marginTop: 6}}>
+            {submitting ? 'Сохраняем результат…' : (SERVER_ON && !lastServerError ? 'Результат сохранён. Он появится в вашем отчёте КогнитоПульса на замере.' : 'Результат никуда не отправляется и остаётся только на этом устройстве.')}
+          </div>
+          <div style={{marginTop: 16}}><button className="ghost" onClick={reset}>Готово</button></div>
+        </div>
+      )}
+
+      {stage === 'result' && role === 'teacher' && (() => {
+        const fdfiRefl = TEACHER_REFLECTION_FDFI[fdfiResult.style] || [];
+        const irRefl = TEACHER_REFLECTION_IR[irResult.style] || [];
+        const frcRefl = TEACHER_REFLECTION_FRC[frcResult.style] || [];
+        return (
+          <div className="card" key="result-teacher">
+            <div className="card-desc" style={{marginBottom: 10}}>{fio} · {group}</div>
+            <div className="tip-group-label">Ваш индивидуальный профиль педагога</div>
+            <ProfileGrid fdfi={fdfiResult} ir={irResult} frc={frcResult} />
+
+            <div className="tip-group-label">{DIMENSIONS.fdfi.label}</div>
+            <ul className="tip-list">{fdfiRefl.map((t, i) => (<li key={'a'+i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+
+            <div className="tip-group-label">{DIMENSIONS.ir.label}</div>
+            <ul className="tip-list">{irRefl.map((t, i) => (<li key={'b'+i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+
+            <div className="tip-group-label">{DIMENSIONS.frc.label}</div>
+            <ul className="tip-list">{frcRefl.map((t, i) => (<li key={'c'+i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+
+            <div className="card-desc" style={{marginTop: 14}}>Профиль сохранён на этом устройстве. В «Кабинете преподавателя» вы выберете группу, вид спорта и тему занятия — и получите рекомендации для своих студентов с пометками, где ваш стиль с ними расходится.</div>
+            <div style={{display:'flex', gap: 10, marginTop: 10, flexWrap:'wrap'}}>
+              <button className="primary" style={{marginTop: 0}} onClick={openMentor}>Открыть кабинет преподавателя</button>
+              <button className="ghost" onClick={reset}>Пройти заново</button>
+            </div>
+          </div>
+        );
+      })()}
+
+      {stage === 'mentor' && (() => {
+        const all = (mentorStats && mentorStats.raw) || [];
+        const latest = {};
+        all.filter(r => r.role === 'student' && r.fio).forEach(r => {
+          const k = (r.fio + '|' + (r.group || '')).trim().toLowerCase();
+          if (!latest[k] || (r.ts || 0) > (latest[k].ts || 0)) latest[k] = r;
+        });
+        const students = Object.values(latest);
+        const groups = Array.from(new Set(students.map(r => r.group || '—'))).sort();
+        const inGroup = wsGroup ? students.filter(r => (r.group || '—') === wsGroup).sort((x, y) => String(x.fio).localeCompare(String(y.fio), 'ru', { numeric: true })) : [];
+        const tp = teacherProfile;
+        const topicReady = wsSport && wsTopic;
+        const card = (style) => topicReady ? buildPeCard(wsSport, wsTopic, style) : null;
+        const PeBlocks = ({ c }) => (
+          <div className="pe-card">{c.blocks.map((b, i) => (<div className="pe-aspect" key={i}><div className="pe-aspect-label">{b.label}</div><div className="pe-aspect-text">{b.text}</div></div>))}</div>
+        );
+        const GeneralFdfi = ({ style }) => {
+          const t = (SUBJECT_TIPS['Физическая культура'][style] || []).concat((TIPS_FDFI[style] || []).slice(0, 2));
+          return <ul className="tip-list">{t.map((x, i) => (<li key={i}><div className="tip-num">{i+1}</div><div>{x}</div></li>))}</ul>;
+        };
+        const label = (r) => r.fio;
+        const names = (list) => list.map(label).join(', ');
+        const byStyle = (dim) => {
+          const out = {};
+          STYLE_ORDER[dim].forEach(st => { out[st] = inGroup.filter(r => r[REC_KEY[dim]] === st); });
+          return out;
+        };
+        const student = inGroup.find(r => r.fio === wsStudent);
+        return (
+          <div className="card" key="mentor">
+            <div className="eyebrow">Кабинет преподавателя</div>
+            <div className="card-title">Рекомендации к занятию под стили студентов</div>
+            {mentorLoading && <div className="card-desc">Загрузка результатов студентов…</div>}
+            {!mentorLoading && mentorStats && (
+              <React.Fragment>
+                {tp ? (
+                  <div className="meta-chip" style={{display:'inline-block', marginBottom: 12}}>Ваш профиль: {tp.fdfi} · {tp.ir} · {tp.frc}</div>
+                ) : (
+                  <div className="confidence-note" style={{marginBottom: 12}}>Пройдите диагностику как педагог на этом устройстве — тогда здесь появятся пометки, где ваш стиль расходится со стилем студентов.</div>
+                )}
+
+                <div className="ws-tabs">
+                  <button className={wsMode === 'group' ? 'ws-tab active' : 'ws-tab'} onClick={() => setWsMode('group')}>Вся группа</button>
+                  <button className={wsMode === 'student' ? 'ws-tab active' : 'ws-tab'} onClick={() => setWsMode('student')}>Один студент</button>
+                  <button className={wsMode === 'summary' ? 'ws-tab active' : 'ws-tab'} onClick={() => setWsMode('summary')}>Сводка и выгрузка</button>
+                </div>
+
+                {wsMode !== 'summary' && (
+                  <React.Fragment>
+                    <label className="field-label" htmlFor="ws-group">Учебная группа</label>
+                    <select id="ws-group" value={wsGroup} onChange={e => { setWsGroup(e.target.value); setWsStudent(''); }}>
+                      <option value="">— выберите —</option>
+                      {groups.map(g => (<option key={g} value={g}>{g} ({students.filter(r => (r.group || '—') === g).length} студ.)</option>))}
+                    </select>
+                    {groups.length === 0 && <div className="card-desc">Пока нет результатов студентов. Попросите студентов пройти тесты (роль «Я — студент») и нажмите «Обновить».</div>}
+
+                    <label className="field-label" htmlFor="ws-sport">Вид спорта / раздел программы</label>
+                    <select id="ws-sport" value={wsSport} onChange={e => { setWsSport(e.target.value); setWsTopic(''); }}>
+                      <option value="">— без темы: общие рекомендации —</option>
+                      {Object.keys(PE_SPORTS).map(sp => (<option key={sp} value={sp}>{sp}</option>))}
+                    </select>
+                    {wsSport && (
+                      <React.Fragment>
+                        <label className="field-label" htmlFor="ws-topic">Тема занятия</label>
+                        <select id="ws-topic" value={wsTopic} onChange={e => setWsTopic(e.target.value)}>
+                          <option value="">— выберите —</option>
+                          {PE_SPORTS[wsSport].map(t => (<option key={t} value={t}>{t}</option>))}
+                        </select>
+                      </React.Fragment>
+                    )}
+                  </React.Fragment>
+                )}
+
+                {wsMode === 'group' && wsGroup && inGroup.length > 0 && (() => {
+                  const f = byStyle('fdfi'), ir = byStyle('ir'), fr = byStyle('frc');
+                  const fPresent = STYLE_ORDER.fdfi.filter(st => f[st].length);
+                  const mixedGroup = (f['полезависимый'].length && f['поленезависимый'].length) || f['смешанный'].length;
+                  return (
+                    <React.Fragment>
+                      <div className="tip-group-label">Состав группы «{wsGroup}» — {inGroup.length} уч.</div>
+                      {['fdfi', 'ir', 'frc'].map(dim => {
+                        const g = byStyle(dim);
+                        return (
+                          <div className="ws-dist" key={dim}>
+                            <div className="ws-dist-title">{DIMENSIONS[dim].label}</div>
+                            {STYLE_ORDER[dim].filter(st => g[st].length).map(st => (
+                              <div className="stat-row" key={st}><span><b>{st}</b> — {g[st].length}{tp && tp[dim] === st ? ' (как вы)' : ''}</span><span className="ws-names">{names(g[st])}</span></div>
+                            ))}
+                          </div>
+                        );
+                      })}
+
+                      <div className="tip-group-label">{topicReady ? `План занятия: ${wsSport} — «${wsTopic}»` : 'Как вести занятие (общие рекомендации)'}</div>
+                      {mixedGroup && fPresent.length > 1 ? (
+                        <React.Fragment>
+                          <div className="card-desc">В группе разные стили восприятия — основу занятия стройте по комбинированной схеме, а для подгрупп добавьте приёмы ниже.</div>
+                          {topicReady && card('смешанный') ? <PeBlocks c={card('смешанный')} /> : <GeneralFdfi style="смешанный" />}
+                        </React.Fragment>
+                      ) : null}
+                      {fPresent.filter(st => !(mixedGroup && fPresent.length > 1 && st === 'смешанный')).map(st => (
+                        <React.Fragment key={st}>
+                          <div className="ws-sub">Для подгруппы «{st}» ({f[st].length}): {names(f[st])}</div>
+                          {topicReady && card(st) ? <PeBlocks c={card(st)} /> : <GeneralFdfi style={st} />}
+                        </React.Fragment>
+                      ))}
+
+                      <div className="tip-group-label">Темп: импульсивность / рефлексивность</div>
+                      {STYLE_ORDER.ir.filter(st => ir[st].length).map(st => (
+                        <React.Fragment key={st}>
+                          <div className="ws-sub">{st} ({ir[st].length})</div>
+                          <ul className="tip-list">{(TIPS_IR[st] || []).slice(0, 2).map((t, i) => (<li key={i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+                        </React.Fragment>
+                      ))}
+                      <div className="tip-group-label">Переключение: гибкость / ригидность</div>
+                      {STYLE_ORDER.frc.filter(st => fr[st].length).map(st => (
+                        <React.Fragment key={st}>
+                          <div className="ws-sub">{st} ({fr[st].length})</div>
+                          <ul className="tip-list">{(TIPS_FRC[st] || []).slice(0, 2).map((t, i) => (<li key={i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+                        </React.Fragment>
+                      ))}
+
+                      {tp && (() => {
+                        const diff = ['fdfi', 'ir', 'frc'].map(dim => ({ dim, n: inGroup.filter(r => r[REC_KEY[dim]] && r[REC_KEY[dim]] !== tp[dim]).length })).filter(x => x.n);
+                        return diff.length ? (
+                          <div className="mismatch-box" style={{marginTop: 14}}>
+                            <b>Где ваш стиль расходится с группой:</b>{' '}
+                            {diff.map(x => `${DIMENSIONS[x.dim].label.toLowerCase()} — у ${x.n} из ${inGroup.length} студ.`).join('; ')}.
+                            {' '}Проверьте, что в плане занятия есть формат и для них, а не только привычный вам.
+                          </div>
+                        ) : null;
+                      })()}
+                    </React.Fragment>
+                  );
+                })()}
+
+                {wsMode === 'student' && wsGroup && (
+                  <React.Fragment>
+                    <label className="field-label" htmlFor="ws-student">{COLLECT_FIO ? 'Студент' : 'Студент (код участника)'}</label>
+                    <select id="ws-student" value={wsStudent} onChange={e => setWsStudent(e.target.value)}>
+                      <option value="">— выберите —</option>
+                      {inGroup.map(r => (<option key={r.fio} value={r.fio}>{label(r)}</option>))}
+                    </select>
+                    {student && (
+                      <React.Fragment>
+                        <div className="profile-grid" style={{marginTop: 12}}>
+                          {['fdfi', 'ir', 'frc'].map(dim => (
+                            <div className="profile-chip" key={dim}><b>{student[REC_KEY[dim]] || '—'}</b><span>{DIMENSIONS[dim].label}</span></div>
+                          ))}
+                        </div>
+                        <div className="tip-group-label">{topicReady ? `${wsSport} — «${wsTopic}»` : 'Как объяснять новое (общие рекомендации)'}</div>
+                        {topicReady && card(student.fdfiStyle) ? <PeBlocks c={card(student.fdfiStyle)} /> : <GeneralFdfi style={student.fdfiStyle || 'смешанный'} />}
+                        <div className="tip-group-label">Темп ({student.irStyle})</div>
+                        <ul className="tip-list">{(TIPS_IR[student.irStyle] || TIPS_IR['смешанный']).slice(0, 3).map((t, i) => (<li key={i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+                        <div className="tip-group-label">Переключение ({student.frcStyle})</div>
+                        <ul className="tip-list">{(TIPS_FRC[student.frcStyle] || TIPS_FRC['смешанный']).slice(0, 3).map((t, i) => (<li key={i}><div className="tip-num">{i+1}</div><div>{t}</div></li>))}</ul>
+                        {tp && (() => {
+                          const diff = ['fdfi', 'ir', 'frc'].filter(dim => student[REC_KEY[dim]] && student[REC_KEY[dim]] !== tp[dim]);
+                          return (
+                            <div className="mismatch-box" style={{marginTop: 14}}>
+                              <b>Сравнение с вашим стилем:</b>{' '}
+                              {diff.length
+                                ? diff.map(dim => `${DIMENSIONS[dim].label.toLowerCase()}: у вас — ${tp[dim]}, у студента — ${student[REC_KEY[dim]]}`).join('; ') + '. Здесь есть риск объяснять «под себя» — опирайтесь на рекомендации выше.'
+                                : 'стили совпадают по всем трём измерениям — привычная вам подача, скорее всего, подойдёт этому студенту.'}
+                            </div>
+                          );
+                        })()}
+                      </React.Fragment>
+                    )}
+                  </React.Fragment>
+                )}
+
+                {wsMode === 'summary' && (
+                  <React.Fragment>
+                    <div className="big-num">{mentorStats.total}</div>
+                    <div className="card-desc" style={{marginBottom: 8}}>диагностик всего (студенты и педагоги)</div>
+                    <div className="tip-group-label">По группам</div>
+                    {Object.keys(mentorStats.byGroup).length === 0 && <div className="card-desc">Пока нет данных.</div>}
+                    {Object.entries(mentorStats.byGroup).map(([k, v]) => (<div className="stat-row" key={k}><span>{k}</span><span>{v} чел.</span></div>))}
+                    <div className="tip-group-label">Полезависимость / поленезависимость</div>
+                    {Object.entries(mentorStats.byFdfi).map(([k, v]) => (<div className="stat-row" key={k}><span>{k}</span><span>{v}</span></div>))}
+                    <div className="tip-group-label">Импульсивность / рефлексивность</div>
+                    {Object.entries(mentorStats.byIr).map(([k, v]) => (<div className="stat-row" key={k}><span>{k}</span><span>{v}</span></div>))}
+                    <div className="tip-group-label">Гибкость / ригидность контроля</div>
+                    {Object.entries(mentorStats.byFrc).map(([k, v]) => (<div className="stat-row" key={k}><span>{k}</span><span>{v}</span></div>))}
+                    <div style={{marginTop: 14}}><button className="ghost" onClick={downloadCsv} disabled={mentorStats.total === 0}>Скачать CSV</button></div>
+                  </React.Fragment>
+                )}
+
+                <div style={{display:'flex', gap: 10, marginTop: 18, flexWrap:'wrap'}}>
+                  <button className="ghost" onClick={openMentor}>Обновить</button>
+                  <button className="ghost" onClick={() => setStage('role')}>На главную</button>
+                </div>
+                <div className="meta-chip" style={{display:'inline-block', marginTop: 14}}>
+                  Источник данных: {mentorStats.usedServer ? 'сервер (результаты со всех устройств)' : 'только это устройство'}
+                </div>
+                {!SERVER_ON && (
+                  <div className="confidence-note" style={{marginTop: 10}}>
+                    Сохранение на сервер не подключено — видны только тесты, пройденные на этом устройстве. Подключите Google Таблицу по инструкции.
+                  </div>
+                )}
+                {(lastStorageError || lastServerError) && (
+                  <div className="confidence-note" style={{marginTop: 10, color: "#C2483A", background: "#FBEAE6"}}>
+                    Ошибка: {lastServerError || lastStorageError}
+                  </div>
+                )}
+              </React.Fragment>
+            )}
+          </div>
+        );
+      })()}
+
+      <div className="footer-note">
+        MVP-прототип проекта «КогнитивноГид» (КИВО-2026). Три теста проходятся подряд и формируют единый индивидуальный профиль: полезависимость/поленезависимость — тест включённых фигур (Г. Уиткин, 1954, 20 уровней; упрощённая иллюстрация, для итоговой версии рекомендуется GEFT/АКТ-70); импульсивность/рефлексивность — по принципу теста сравнения похожих рисунков (MFFT, Дж. Каган; латентное время первого ответа + число ошибок); гибкость/ригидность познавательного контроля — по принципу словесно-цветовой интерференции (тест Струпа; интерференция = разница времени на неконгруэнтных и конгруэнтных пробах). Стимульный материал Кагана и Струпа адаптирован под интерактивный веб-формат, не является точной копией бланковых методик. Рекомендации по физической культуре (59 тем, 13 видов спорта) опираются на Холодов Ж.К., Кузнецов В.С. «Теория и методика физического воспитания и спорта»; Ашмарин Б.А. «Теория и методика физического воспитания» (1990); Боген М.М. «Обучение двигательным действиям»; Ильин Е.П. «Психология спорта» — и берутся за основу маршрута; рекомендации по импульсивности/рефлексивности и гибкости/ригидности контроля — общепедагогические, без привязки к конкретному виду спорта. Пороги классификации по всем трём тестам подобраны эвристически и требуют калибровки на реальной выборке в ходе пилота.
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>
